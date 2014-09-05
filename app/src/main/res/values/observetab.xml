@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string name="observe_tab_name">観測</string>
+        <string name="observe_tab_tag">observe_tab</string>
+</resources>
