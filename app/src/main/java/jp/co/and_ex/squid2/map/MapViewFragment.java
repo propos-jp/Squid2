@@ -1,4 +1,4 @@
-package jp.co.and_ex.squid2.observe;
+package jp.co.and_ex.squid2.map;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -12,12 +12,12 @@ import jp.co.and_ex.squid2.util.BaseFragment;
 /**
  * Created by obata on 2014/09/05.
  */
-public class ObserveTabFragment extends BaseFragment {
+public class MapViewFragment extends BaseFragment {
     @Override
   public View onCreateView(
     LayoutInflater inflater,
     ViewGroup container,
     Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_observe, container, false);
+    return inflater.inflate(R.layout.fragment_map, container, false);
   }
 }

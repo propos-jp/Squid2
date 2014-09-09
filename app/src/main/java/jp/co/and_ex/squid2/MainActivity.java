@@ -10,13 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import jp.co.and_ex.squid2.list.ListTabFragment;
-import jp.co.and_ex.squid2.map.MapTabFragment;
-import jp.co.and_ex.squid2.observe.ObserveTabFragment;
+import jp.co.and_ex.squid2.list.ListViewFragment;
+import jp.co.and_ex.squid2.map.MapViewFragment;
+import jp.co.and_ex.squid2.observe.ObserveViewFragment;
 import jp.co.and_ex.squid2.util.TabListener;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ListViewFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +29,16 @@ public class MainActivity extends Activity {
 
         actionBar.addTab(actionBar.newTab()
                 .setText(getString(R.string.list_tab_name))
-                .setTabListener(new TabListener<ListTabFragment>(
-                        this, getString(R.string.list_tab_tag), ListTabFragment.class)));
+                .setTabListener(new TabListener<ListViewFragment>(
+                        this, getString(R.string.list_tab_tag), ListViewFragment.class)));
         actionBar.addTab(actionBar.newTab()
                 .setText(getString(R.string.map_tab_name))
-                .setTabListener(new TabListener<MapTabFragment>(
-                        this, getString(R.string.map_tab_tag), MapTabFragment.class)));
+                .setTabListener(new TabListener<MapViewFragment>(
+                        this, getString(R.string.map_tab_tag), MapViewFragment.class)));
         actionBar.addTab(actionBar.newTab()
                 .setText(getString(R.string.observe_tab_name))
-                .setTabListener(new TabListener<ObserveTabFragment>(
-                        this, getString(R.string.observe_tab_tag), ObserveTabFragment.class)));
+                .setTabListener(new TabListener<ObserveViewFragment>(
+                        this, getString(R.string.observe_tab_tag), ObserveViewFragment.class)));
 
     }
 
@@ -61,6 +61,11 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+     public void onFragmentInteraction(String id) {
+
+     }
 
     /**
      * A placeholder fragment containing a simple view.
