@@ -12,6 +12,10 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.apache.http.auth.AUTH;
+
+import jp.co.and_ex.squid2.R;
+
 import java.io.IOException;
 
 public class ObserveDataProvider extends ContentProvider {
@@ -19,19 +23,21 @@ public class ObserveDataProvider extends ContentProvider {
     private static final int OBSERVE_DATA = 1;
     private static final int GLOBAL_ID = 2;
 
-    public static String AUTHORITY = ObserveData.AUTHORITY;
+
+    public static Uri CONTENT_URI =null;
 
     private static final UriMatcher URI_MATCHER;
 
     static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(AUTHORITY, "observe_data", OBSERVE_DATA);
-        URI_MATCHER.addURI(AUTHORITY, "observe_data/#", GLOBAL_ID);
+        URI_MATCHER.addURI(ObserveData.AUTHORITY, "observe_data", OBSERVE_DATA);
+        URI_MATCHER.addURI(ObserveData.AUTHORITY, "observe_data/#", GLOBAL_ID);
     }
     private DataBaseHelper mDBHelper;
 
     @Override
     public boolean onCreate() {
+         CONTENT_URI = Uri.parse("content://" + ObserveData.AUTHORITY + "/observe_data");
         try {
             mDBHelper = new DataBaseHelper(getContext());
             return true;
@@ -91,7 +97,7 @@ public class ObserveDataProvider extends ContentProvider {
 
         if (rowID > 0) {
             Uri newUri = ContentUris.withAppendedId(
-                    ObserveData.CONTENT_URI, rowID);
+                    CONTENT_URI, rowID);
             getContext().getContentResolver().notifyChange(newUri, null);
             return newUri;
         }

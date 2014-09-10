@@ -3,6 +3,7 @@ package jp.co.and_ex.squid2;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,13 +11,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import Graph.GraphFragment;
+import Graph.GraphListener;
+import jp.co.and_ex.squid2.db.ObserveData;
 import jp.co.and_ex.squid2.list.ListViewFragment;
 import jp.co.and_ex.squid2.map.MapViewFragment;
 import jp.co.and_ex.squid2.observe.ObserveViewFragment;
 import jp.co.and_ex.squid2.util.TabListener;
 
 
-public class MainActivity extends Activity implements ListViewFragment.OnFragmentInteractionListener {
+public class MainActivity extends Activity implements ListViewFragment.OnFragmentInteractionListener , GraphListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,23 +67,15 @@ public class MainActivity extends Activity implements ListViewFragment.OnFragmen
     }
 
     @Override
-     public void onFragmentInteraction(String id) {
-
+     public void onFragmentInteraction(Integer id) {
+        GraphFragment.show(getFragmentManager(),this,id);
      }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
+    @Override
+    public void onCloseButtonClick() { GraphFragment.hide(getFragmentManager());}
 
-        public PlaceholderFragment() {
-        }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_list, container, false);
-            return rootView;
-        }
-    }
 }
+
+
+

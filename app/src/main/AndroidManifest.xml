@@ -19,7 +19,7 @@
 
         <provider
             android:name=".db.ObserveDataProvider"
-            android:authorities="jp.co.and_ex.squid.observe_data"
+            android:authorities="jp.co.and_ex.squid.provider"
             android:enabled="true"
             android:exported="true" >
         </provider>
