@@ -12,32 +12,28 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.apache.http.auth.AUTH;
-
-import jp.co.and_ex.squid2.R;
-
 import java.io.IOException;
 
 public class ObserveDataProvider extends ContentProvider {
 
     private static final int OBSERVE_DATA = 1;
-    private static final int GLOBAL_ID = 2;
+    private static final int KEY_ID = 2;
 
 
-    public static Uri CONTENT_URI =null;
+    public static final Uri CONTENT_URI = ObserveDataContract.CONTENT_URI;
 
     private static final UriMatcher URI_MATCHER;
 
     static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(ObserveData.AUTHORITY, "observe_data", OBSERVE_DATA);
-        URI_MATCHER.addURI(ObserveData.AUTHORITY, "observe_data/#", GLOBAL_ID);
+        URI_MATCHER.addURI(ObserveDataContract.AUTHORITY, "observe_data", OBSERVE_DATA);
+        URI_MATCHER.addURI(ObserveDataContract.AUTHORITY, "observe_data/#", KEY_ID);
     }
     private DataBaseHelper mDBHelper;
 
     @Override
     public boolean onCreate() {
-         CONTENT_URI = Uri.parse("content://" + ObserveData.AUTHORITY + "/observe_data");
+
         try {
             mDBHelper = new DataBaseHelper(getContext());
             return true;
@@ -53,8 +49,8 @@ public class ObserveDataProvider extends ContentProvider {
 
         switch (URI_MATCHER.match(uri)) {
             case OBSERVE_DATA:
-                count = db.delete(ObserveData.TABLE_OBSERVE_DATA, " " +
-                       ObserveData.KEY_ID + " like '%'", null);
+                count = db.delete(ObserveDataContract.TABLE_OBSERVE_DATA, " " +
+                       ObserveDataContract.KEY_ID + " like '%'", null);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URL " + uri);
@@ -68,9 +64,9 @@ public class ObserveDataProvider extends ContentProvider {
          //@formatter:off
         switch (URI_MATCHER.match(uri)) {
             case OBSERVE_DATA:
-                return ObserveData.CONTENT_TYPE; // expect the Cursor to contain 0..x items
-            case GLOBAL_ID:
-                return ObserveData.CONTENT_ITEM_TYPE; // expect the Cursor to contain 1 item
+                return ObserveDataContract.CONTENT_TYPE; // expect the Cursor to contain 0..x items
+            case KEY_ID:
+                return ObserveDataContract.CONTENT_ITEM_TYPE; // expect the Cursor to contain 1 item
             default:
                 throw new IllegalArgumentException("Unknown URL " + uri);
         }
@@ -93,7 +89,7 @@ public class ObserveDataProvider extends ContentProvider {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
         // 追加、又はplace_idが重複の場合は更新
-        long rowID = db.replace(ObserveData.TABLE_OBSERVE_DATA, "NULL", values);
+        long rowID = db.replace(ObserveDataContract.TABLE_OBSERVE_DATA, "NULL", values);
 
         if (rowID > 0) {
             Uri newUri = ContentUris.withAppendedId(
@@ -110,15 +106,15 @@ public class ObserveDataProvider extends ContentProvider {
             String sortOrder) {
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        qb.setTables(ObserveData.TABLE_OBSERVE_DATA);
+        qb.setTables(ObserveDataContract.TABLE_OBSERVE_DATA);
 
         Log.d("query", uri.toString());
         switch (URI_MATCHER.match(uri)) {
             case OBSERVE_DATA:
                 break;
 
-            case GLOBAL_ID:
-                qb.appendWhere(ObserveData.KEY_GLOBAL_ID + "="
+            case KEY_ID:
+                qb.appendWhere(ObserveDataContract.KEY_ID + "="
                         + uri.getPathSegments().get(1));
                 break;
             default:
@@ -126,13 +122,13 @@ public class ObserveDataProvider extends ContentProvider {
         }
         String orderBy;
         if (TextUtils.isEmpty(sortOrder)) {
-            orderBy = ObserveData.KEY_ID + " DESC"; // 新しい順
+            orderBy = ObserveDataContract.KEY_ID + " DESC"; // 新しい順
         } else {
             orderBy = sortOrder;
         }
 
         SQLiteDatabase db = mDBHelper.getReadableDatabase();
-        Cursor cursor = qb.query(db, null, null, null, null, null, orderBy);
+        Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -144,13 +140,13 @@ public class ObserveDataProvider extends ContentProvider {
         int count;
         switch (URI_MATCHER.match(uri)) {
             case OBSERVE_DATA:
-                count = db.update(ObserveData.TABLE_OBSERVE_DATA, values, where, whereArgs);
+                count = db.update(ObserveDataContract.TABLE_OBSERVE_DATA, values, where, whereArgs);
                 break;
 
-            case GLOBAL_ID:
+            case KEY_ID:
                 String id = uri.getPathSegments().get(1);
-                count = db.update(ObserveData.TABLE_OBSERVE_DATA, values,
-                        ObserveData.KEY_GLOBAL_ID + "="
+                count = db.update(ObserveDataContract.TABLE_OBSERVE_DATA, values,
+                        ObserveDataContract.KEY_ID + "="
                                 + id
                                 + (!TextUtils.isEmpty(where) ? " AND (" + where
                                         + ')' : ""), whereArgs);

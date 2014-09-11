@@ -1,26 +1,83 @@
 package jp.co.and_ex.squid2.db;
 
-import android.net.Uri;
-import android.provider.BaseColumns;
-import jp.co.and_ex.squid2.R;
-
 /**
- * Created by obata on 2014/09/08.
+ * Created by obata on 2014/09/10.
  */
 public class ObserveData {
-      public static final String TABLE_OBSERVE_DATA = "observe_data";
-      public static final String AUTHORITY = "jp.co.and_ex.squid.provider";
+    private Integer id;
+    private String global_id;
+    private String observe_date;
+    private double latitude;
+    private double longitude;
+    private String user_id;
+    private Integer uploaded;
+    private String data;
 
-      public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.squid.observe_data";
-      public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.squid.observe_data";
-      // Columns names
-      public static final String KEY_ID = BaseColumns._ID;
-      public static final String KEY_GLOBAL_ID = "global_id";
-      public static final String KEY_OBSERVE_DATE = "observe_date";
-      public static final String KEY_LATITUDE = "latitude";
-      public static final String KEY_LONGITUDE = "longitude";
-      public static final String KEY_USER_ID = "user_id";
-      public static final String KEY_DATA = "data";
+    public Integer getUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(Integer uploaded) {
+        this.uploaded = uploaded;
+    }
+
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getGlobal_id() {
+        return global_id;
+    }
+
+    public void setGlobal_id(String global_id) {
+        this.global_id = global_id;
+    }
+
+    public String getObserve_date() {
+        return observe_date;
+    }
+
+    public void setObserve_date(String observe_date) {
+        this.observe_date = observe_date;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
 
 
 }

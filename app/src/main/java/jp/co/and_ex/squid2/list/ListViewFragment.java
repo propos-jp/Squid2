@@ -9,19 +9,14 @@ import android.os.Bundle;
 import android.app.ListFragment;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import jp.co.and_ex.squid2.db.ObserveData;
+import jp.co.and_ex.squid2.db.ObserveDataContract;
 import jp.co.and_ex.squid2.db.ObserveDataProvider;
-import jp.co.and_ex.squid2.list.dummy.DummyContent;
 
 /**
  * A fragment representing a list of Items.
@@ -32,7 +27,7 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
 
     private SimpleCursorAdapter cursorAdapter;
     private OnFragmentInteractionListener mListener;
-    List<Integer> pos_array;
+    List<Integer> globalId_array;
 
     public static ListViewFragment newInstance() {
         ListViewFragment fragment = new ListViewFragment();
@@ -61,7 +56,7 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
         getLoaderManager().initLoader(0, null, this);
 
         // CursorAdapter をセット. フラグの部分は autoRequery はしないようにセットするので注意
-        final String[] from = {ObserveData.KEY_OBSERVE_DATE};
+        final String[] from = {ObserveDataContract.KEY_OBSERVE_DATE};
         final int[] to = {android.R.id.text1};
         cursorAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, from, to, 0);
 
@@ -94,7 +89,7 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
 
         if (null != mListener) {
 
-            mListener.onFragmentInteraction(pos_array.get(position));
+            mListener.onFragmentInteraction(globalId_array.get(position));
         }
     }
 
@@ -137,16 +132,16 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
             old.close();
         }
         if (cursor.getCount() == 0) {
-            pos_array = null;
+            globalId_array = null;
             return;
         }
 
-        pos_array = new ArrayList<Integer>();
+        globalId_array = new ArrayList<Integer>();
         if (cursor.moveToFirst()) {
             do {
                 Integer i = cursor.getInt(0);
 
-                pos_array.add(i);
+                globalId_array.add(i);
             } while (cursor.moveToNext());
         }
     }

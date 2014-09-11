@@ -15,6 +15,5 @@ public class DataBaseHelper extends SQLiteAssetHelper {
 
     public DataBaseHelper(Context context) throws IOException {
         super(context, context.getResources().getString(R.string.database_name), null, context.getResources().getInteger(R.integer.database_version));
-
     }
 }
