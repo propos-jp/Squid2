@@ -7,6 +7,5 @@
     <style name="MyDialogTheme" parent="@android:style/Theme.Holo.Light.Dialog">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@drawable/translucent_background</item>
     </style>
 </resources>

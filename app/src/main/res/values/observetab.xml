@@ -2,4 +2,8 @@
 <resources>
         <string name="observe_tab_name">観測</string>
         <string name="observe_tab_tag">observe_tab</string>
+        <string name="not_bluetooth_available">BlueToothに対応していません</string>
+        <string name="not_bluetooth_enable">BlueToothが有効になりませんでした</string>
+        <string name="button_connect">接続</string>
+        <string name="button_receive">受信</string>
 </resources>

@@ -201,8 +201,9 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         renderer.setMargins(new int[] { 20, 30, 15, 20 });
 
 
-        r.setColor( Color.RED);
-        r.setPointStyle(PointStyle.POINT);
+        r.setColor( Color.YELLOW);
+        r.setPointStyle(PointStyle.CIRCLE);
+        r.setFillPoints(true);
         renderer.addSeriesRenderer(r);
         return renderer;
     }
@@ -293,7 +294,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         XYSeries series = this.makeSeries(data.getData());
         XYMultipleSeriesDataset dataset = this.makeDataset(series);
         XYMultipleSeriesRenderer renderer = this.makeRenderer();
-        setChartSettings(renderer, "Scatter chart", "水温", "深度", minX * 1.1, maxX * 1.1, maxY * 1.1, minY * 1.1, Color.GRAY, Color.LTGRAY);
+        setChartSettings(renderer, "観測データ表示", "水温", "深度", minX * 1.1, maxX * 1.1, maxY * 1.1, minY * 1.1, Color.GRAY, Color.LTGRAY);
         GraphicalView graph = this.makeGraph(getActivity(), dataset, renderer);
 
 

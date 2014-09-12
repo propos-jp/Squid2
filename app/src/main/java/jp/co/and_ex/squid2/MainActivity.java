@@ -13,8 +13,10 @@ import jp.co.and_ex.squid2.map.MapViewFragment;
 import jp.co.and_ex.squid2.observe.ObserveViewFragment;
 import jp.co.and_ex.squid2.util.TabListener;
 
+import com.actionbarsherlock.app.SherlockActivity;
 
-public class MainActivity extends Activity implements ListViewFragment.OnFragmentInteractionListener , GraphListener{
+
+public class MainActivity extends SherlockActivity implements ListViewFragment.OnFragmentInteractionListener , GraphListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +26,7 @@ public class MainActivity extends Activity implements ListViewFragment.OnFragmen
         //ActionBarをGetしてTabModeをセット
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
+        setTheme(R.style.Sherlock___Theme_DarkActionBar);
         actionBar.addTab(actionBar.newTab()
                 .setText(getString(R.string.list_tab_name))
                 .setTabListener(new TabListener<ListViewFragment>(
@@ -41,24 +43,6 @@ public class MainActivity extends Activity implements ListViewFragment.OnFragmen
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
      public void onFragmentInteraction(Integer id) {
