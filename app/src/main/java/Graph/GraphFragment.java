@@ -67,7 +67,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, data_id);
         dialog.setArguments(args);
-        dialog.show(manager, GraphFragment.class.getSimpleName());
+        dialog.show(manager, TAG);
     }
 
     public static final void hide(FragmentManager manager) {

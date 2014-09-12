@@ -7,6 +7,5 @@ import java.util.EventListener;
  */
 public interface GraphListener extends  EventListener {
      public void onCloseButtonClick();
-
 }
 

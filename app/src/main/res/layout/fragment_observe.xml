@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/button_connect"
                 android:id="@+id/button_connect"
-             />
+                android:onClick="connect"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/button_receive"
                 android:id="@+id/button_receive"
-             />
+                android:onClick="receive"/>
 
             <TextView
                 android:layout_width="wrap_content"

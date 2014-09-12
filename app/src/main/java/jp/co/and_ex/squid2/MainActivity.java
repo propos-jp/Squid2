@@ -2,7 +2,10 @@ package jp.co.and_ex.squid2;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -10,13 +13,16 @@ import Graph.GraphFragment;
 import Graph.GraphListener;
 import jp.co.and_ex.squid2.list.ListViewFragment;
 import jp.co.and_ex.squid2.map.MapViewFragment;
+import jp.co.and_ex.squid2.observe.DeviceListFragment;
 import jp.co.and_ex.squid2.observe.ObserveViewFragment;
 import jp.co.and_ex.squid2.util.TabListener;
 
 import com.actionbarsherlock.app.SherlockActivity;
 
+import java.io.IOException;
 
-public class MainActivity extends SherlockActivity implements ListViewFragment.OnFragmentInteractionListener , GraphListener{
+
+public class MainActivity extends SherlockActivity implements ListViewFragment.OnFragmentInteractionListener , GraphListener,ObserveViewFragment.ObserveViewListener,DeviceListFragment.DeviceListListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +56,33 @@ public class MainActivity extends SherlockActivity implements ListViewFragment.O
      }
 
     @Override
-    public void onCloseButtonClick() { GraphFragment.hide(getFragmentManager());}
+    public void onCloseButtonClick() {
+        GraphFragment.hide(getFragmentManager());
 
+    }
+
+
+    @Override
+    public void viewDeviceList(int requestId) {
+        DeviceListFragment.show(getFragmentManager(),this,requestId);
+
+    }
+
+
+    @Override
+    public void closeWindow() {
+        DeviceListFragment.hide(getFragmentManager());
+    }
+
+    @Override
+    public void listSelected(String address,int request_id) {
+        Log.d("Selected Address",address );
+        Log.d("Request ID",Integer.toString(request_id ));
+        DeviceListFragment.hide(getFragmentManager());
+
+        ObserveViewFragment fragment = (ObserveViewFragment)getFragmentManager().findFragmentByTag(getString(R.string.observe_tab_tag));
+        if(fragment != null) fragment.setDeviceAddress(address, request_id);
+    }
 
 }
 
