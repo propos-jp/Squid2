@@ -8,4 +8,6 @@
     <string name="button_receive">受信開始</string>
     <string name="none_paired">ペアリング済みのデバイスがみつかりません</string>
     <string name="none_found">デバイスがみつかりません</string>
+    <string name="time_out">タイムアウトしました</string>
+    <string name="squid_started">観測開始しました</string>
 </resources>

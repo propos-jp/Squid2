@@ -39,9 +39,6 @@ public class DeviceListFragment extends DialogFragment {
     private BluetoothAdapter mBluetoothAdapter;
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
 
-    public static final String ARG_PARAM1 = "request_id";
-
-    private static int request_id = -1;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -58,13 +55,10 @@ public class DeviceListFragment extends DialogFragment {
 
     DeviceListListener deviceListListener = null;
 
-    public static final void show(FragmentManager manager,DeviceListListener listener,int param1) {
+    public static final void show(FragmentManager manager,DeviceListListener listener) {
 
         DeviceListFragment dialog = DeviceListFragment.newInstance();
         dialog.deviceListListener = listener;
-        Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, param1);
-        dialog.setArguments(args);
         dialog.show(manager, TAG);
     }
 
@@ -74,7 +68,6 @@ public class DeviceListFragment extends DialogFragment {
         if (temp instanceof DeviceListFragment) {
             DeviceListFragment dialog = (DeviceListFragment) temp;
             dialog.deviceListListener = null;
-            request_id = -1;
             dialog.dismiss();
         }
     }
@@ -82,10 +75,7 @@ public class DeviceListFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-             request_id = getArguments().getInt(ARG_PARAM1);
-        }
-    }
+     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,7 +117,7 @@ public class DeviceListFragment extends DialogFragment {
                     if (s != null && s.length == 2){
                         String address = s[1];
                         Log.d("DeviceListView Selected address", address);
-                        deviceListListener.listSelected(address,request_id);
+                        deviceListListener.listSelected(address);
                     }
                 }
             }
@@ -146,7 +136,7 @@ public class DeviceListFragment extends DialogFragment {
 
       public interface DeviceListListener  extends  EventListener{
         public void closeWindow();
-        public void listSelected(String address,int request_id);
+        public void listSelected(String address);
     }
 }
 

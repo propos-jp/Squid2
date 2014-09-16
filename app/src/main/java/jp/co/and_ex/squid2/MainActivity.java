@@ -63,8 +63,8 @@ public class MainActivity extends SherlockActivity implements ListViewFragment.O
 
 
     @Override
-    public void viewDeviceList(int requestId) {
-        DeviceListFragment.show(getFragmentManager(),this,requestId);
+    public void viewDeviceList() {
+        DeviceListFragment.show(getFragmentManager(),this);
 
     }
 
@@ -75,13 +75,16 @@ public class MainActivity extends SherlockActivity implements ListViewFragment.O
     }
 
     @Override
-    public void listSelected(String address,int request_id) {
+    public void listSelected(String address) {
         Log.d("Selected Address",address );
-        Log.d("Request ID",Integer.toString(request_id ));
         DeviceListFragment.hide(getFragmentManager());
 
         ObserveViewFragment fragment = (ObserveViewFragment)getFragmentManager().findFragmentByTag(getString(R.string.observe_tab_tag));
-        if(fragment != null) fragment.setDeviceAddress(address, request_id);
+        if(fragment != null) {
+            fragment.setDeviceAddress(address);
+            return;
+        }
+        fragment.connectStart();
     }
 
 }

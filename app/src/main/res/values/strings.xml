@@ -6,4 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name ="observe_view_fragment">"ObserveViewFragment"</string>
+    <string name="internal_error">内部エラーが発生しました</string>
+
 </resources>
