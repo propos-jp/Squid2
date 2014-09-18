@@ -2,9 +2,10 @@ package jp.co.and_ex.squid2.db;
 
 import android.content.Context;
 
+import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
+
 import java.io.IOException;
 
-import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 import jp.co.and_ex.squid2.R;
 
 

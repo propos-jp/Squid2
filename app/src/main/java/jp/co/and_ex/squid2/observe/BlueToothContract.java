@@ -6,7 +6,7 @@ import java.util.UUID;
  * Created by obata on 2014/09/16.
  */
 public class BlueToothContract {
-   // Message types sent from the BluetoothChatService Handler
+    // Message types sent from the BluetoothChatService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_WRITE = 3;

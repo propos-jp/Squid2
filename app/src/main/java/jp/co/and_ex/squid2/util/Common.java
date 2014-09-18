@@ -12,28 +12,28 @@ import java.io.InputStreamReader;
  * Created by obata on 2014/09/09.
  */
 public class Common {
-     public static String readAssets(Context context,String path) throws IOException {
-            AssetManager as = context.getResources().getAssets();
+    public static String readAssets(Context context, String path) throws IOException {
+        AssetManager as = context.getResources().getAssets();
 
-            InputStream is = null;
-            BufferedReader br = null;
+        InputStream is = null;
+        BufferedReader br = null;
 
-            StringBuilder sb = new StringBuilder();
-            try{
-                try {
-                    is = as.open(path);
-                    br = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        try {
+            try {
+                is = as.open(path);
+                br = new BufferedReader(new InputStreamReader(is));
 
-                    String str;
-                    while((str = br.readLine()) != null){
-                        sb.append(str +"\n");
-                    }
-                } finally {
-                    if (br != null) br.close();
+                String str;
+                while ((str = br.readLine()) != null) {
+                    sb.append(str + "\n");
                 }
-            } catch (IOException e) {
-               throw e;
+            } finally {
+                if (br != null) br.close();
             }
-            return sb.toString();
+        } catch (IOException e) {
+            throw e;
         }
+        return sb.toString();
+    }
 }

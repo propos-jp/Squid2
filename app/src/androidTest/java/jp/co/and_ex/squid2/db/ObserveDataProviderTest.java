@@ -24,27 +24,12 @@ public class ObserveDataProviderTest extends ProviderTestCase2<ObserveDataProvid
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        DataBaseHelper dbHelper = new DataBaseHelper(getContext());
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        database.delete(ObserveDataContract.TABLE_OBSERVE_DATA, null,null);
 
     }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        provider = getProvider();
-        Uri uri = provider.CONTENT_URI;
-        ContentValues values = new ContentValues();
-
-
-        for (int i = 0; i < 3; i++) {
-            values.clear();
-            values.put(ObserveDataContract.KEY_GLOBAL_ID, "id:" + i);
-            values.put(ObserveDataContract.KEY_OBSERVE_DATE, "date:" + i);
-            provider.insert(uri, values);
-        }
-
     }
 
     public void testQuery() throws Exception {

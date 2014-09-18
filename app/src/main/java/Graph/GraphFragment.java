@@ -1,9 +1,9 @@
 package Graph;
 
 
-
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +21,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import jp.co.and_ex.squid2.R;
-import jp.co.and_ex.squid2.db.ObserveData;
-import jp.co.and_ex.squid2.db.ObserveDataContract;
-import jp.co.and_ex.squid2.db.ObserveDataProvider;
-
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -41,8 +34,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import jp.co.and_ex.squid2.R;
+import jp.co.and_ex.squid2.db.ObserveData;
+import jp.co.and_ex.squid2.db.ObserveDataContract;
+import jp.co.and_ex.squid2.db.ObserveDataProvider;
 
-public class GraphFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor>  {
+
+public class GraphFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = GraphFragment.class.getSimpleName();
 
@@ -56,10 +54,10 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
 
     double maxX = 0;
     double minX = 0;
-    double maxY =0;
-    double minY =0;
+    double maxY = 0;
+    double minY = 0;
 
-    public static final void show(FragmentManager manager,GraphListener graphListener, int data_id) {
+    public static final void show(FragmentManager manager, GraphListener graphListener, int data_id) {
 
         GraphFragment dialog = new GraphFragment();
         dialog.graphListener = graphListener;
@@ -83,17 +81,17 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         // Required empty public constructor
     }
 
-   @Override
-   public Dialog onCreateDialog(Bundle savedInstanceState) {
-       Dialog dialog = new Dialog(getActivity(), R.style.MyDialogTheme);
-       return dialog;
-   }
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = new Dialog(getActivity(), R.style.MyDialogTheme);
+        return dialog;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-             db_id = getArguments().getInt(ARG_PARAM1);
+            db_id = getArguments().getInt(ARG_PARAM1);
 
         }
         Dialog dialog = super.onCreateDialog(savedInstanceState);
@@ -110,11 +108,10 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         super.onCreate(savedInstanceState);
 
 
-
         Button buttonOne = (Button) view.findViewById(R.id.CloseButton);
         buttonOne.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                if (graphListener != null){
+                if (graphListener != null) {
                     graphListener.onCloseButtonClick();
                 }
             }
@@ -125,60 +122,64 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
     }
 
 
-        XYSeries makeSeries(String data) {
+    XYSeries makeSeries(String data) {
 
-            XYSeries series = new XYSeries("観測データ");
-            try{
-                if(data != null && data.length() > 0) {
+        XYSeries series = new XYSeries("観測データ");
+        try {
+            if (data != null && data.length() > 0) {
 
                 String[] lines = data.split(Pattern.quote("\r\n"));
-                Log.d("line count ",new Integer(lines.length).toString());
+                Log.d("line count ", new Integer(lines.length).toString());
                 Double y0 = 0.0;
-                for (Integer i = 0;i < lines.length; i++){
-                    Log.d("line",i.toString());
+                for (Integer i = 0; i < lines.length; i++) {
+                    Log.d("line", i.toString());
                     Log.d("data", lines[i]);
                     String values[] = lines[i].split(",");
-                    if (values != null && values.length == 3){
-                        Double x,y;
+                    if (values != null && values.length == 3) {
+                        Double x, y;
                         String ondo = values[1];
                         String depth = values[2];
 
-                        if (depth == null || ondo == null){
+                        if (depth == null || ondo == null) {
                             continue;
                         }
+
                         x = Double.valueOf(ondo.trim());
                         y = Double.valueOf(depth.trim());
-                        x = 0.1123  *x - 25.664;
-                        if (i == 0){
+                        if (x == 0 || y == 0){
+                            continue;
+                        }
+                        x = 0.1123 * x - 25.664;
+                        if (i == 0) {
                             y0 = y;
                         }
-                        y = 0.4841* (y -y0);
-                        if (x > maxX){
+                        y = 0.4841 * (y - y0);
+                        if (x > maxX) {
                             maxX = x;
                         }
-                        if (x < minX){
+                        if (x < minX) {
                             minX = x;
                         }
-                        if (y > maxY){
+                        if (y > maxY) {
                             maxY = y;
                         }
-                        if (y < minY){
+                        if (y < minY) {
                             minY = y;
                         }
 
-                        Log.d("水温",x.toString());
-                        Log.d("深度",y.toString());
+                        Log.d("水温", x.toString());
+                        Log.d("深度", y.toString());
                         series.add(x, y);
                     }
                 }
 
             }
-            }catch (Exception e){
-
-            }
-            return series;
+        } catch (Exception e) {
 
         }
+        return series;
+
+    }
 
     XYMultipleSeriesDataset makeDataset(XYSeries series) {
 
@@ -197,10 +198,10 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         renderer.setLabelsTextSize(15);
         renderer.setLegendTextSize(15);
         renderer.setPointSize(5f);
-        renderer.setMargins(new int[] { 20, 30, 15, 20 });
+        renderer.setMargins(new int[]{20, 30, 15, 20});
 
 
-        r.setColor( Color.YELLOW);
+        r.setColor(Color.YELLOW);
         r.setPointStyle(PointStyle.CIRCLE);
         r.setFillPoints(true);
         renderer.addSeriesRenderer(r);
@@ -228,8 +229,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         renderer.setLabelsColor(labelsColor);
     }
 
-    public void  setGraphListener(GraphListener listener)
-    {
+    public void setGraphListener(GraphListener listener) {
         this.graphListener = listener;
     }
 
@@ -244,7 +244,6 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         super.onDestroyView();
         getLoaderManager().destroyLoader(0);
     }
-
 
 
     @Override
@@ -279,7 +278,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
     }
 
     private void viewSet() {
-       ObserveData data = mData.get(0);
+        ObserveData data = mData.get(0);
 
 
         TextView view2 = (TextView) getView().findViewById(R.id.textObserveDate);
@@ -289,7 +288,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         TextView view4 = (TextView) getView().findViewById(R.id.textLongtude);
         view4.setText(Double.toString(data.getLongitude()));
 
-        FrameLayout layout = (FrameLayout)getView().findViewById(R.id.graphView);
+        FrameLayout layout = (FrameLayout) getView().findViewById(R.id.graphView);
         XYSeries series = this.makeSeries(data.getData());
         XYMultipleSeriesDataset dataset = this.makeDataset(series);
         XYMultipleSeriesRenderer renderer = this.makeRenderer();

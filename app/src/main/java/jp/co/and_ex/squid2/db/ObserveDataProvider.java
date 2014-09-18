@@ -29,6 +29,7 @@ public class ObserveDataProvider extends ContentProvider {
         URI_MATCHER.addURI(ObserveDataContract.AUTHORITY, "observe_data", OBSERVE_DATA);
         URI_MATCHER.addURI(ObserveDataContract.AUTHORITY, "observe_data/#", KEY_ID);
     }
+
     private DataBaseHelper mDBHelper;
 
     @Override
@@ -37,7 +38,7 @@ public class ObserveDataProvider extends ContentProvider {
         try {
             mDBHelper = new DataBaseHelper(getContext());
             return true;
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new SQLException(e.getMessage());
         }
     }
@@ -50,7 +51,7 @@ public class ObserveDataProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case OBSERVE_DATA:
                 count = db.delete(ObserveDataContract.TABLE_OBSERVE_DATA, " " +
-                       ObserveDataContract.KEY_ID + " like '%'", null);
+                        ObserveDataContract.KEY_ID + " like '%'", null);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URL " + uri);
@@ -61,7 +62,7 @@ public class ObserveDataProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-         //@formatter:off
+        //@formatter:off
         switch (URI_MATCHER.match(uri)) {
             case OBSERVE_DATA:
                 return ObserveDataContract.CONTENT_TYPE; // expect the Cursor to contain 0..x items
@@ -103,7 +104,7 @@ public class ObserveDataProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-            String sortOrder) {
+                        String sortOrder) {
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(ObserveDataContract.TABLE_OBSERVE_DATA);
@@ -149,7 +150,7 @@ public class ObserveDataProvider extends ContentProvider {
                         ObserveDataContract.KEY_ID + "="
                                 + id
                                 + (!TextUtils.isEmpty(where) ? " AND (" + where
-                                        + ')' : ""), whereArgs);
+                                + ')' : ""), whereArgs);
                 break;
 
             default:

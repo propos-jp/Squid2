@@ -3,7 +3,13 @@ package jp.co.and_ex.squid2.observe;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,25 +18,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
+import java.security.Provider;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import jp.co.and_ex.squid2.R;
+import jp.co.and_ex.squid2.db.ObserveDataContract;
 import jp.co.and_ex.squid2.util.BaseFragment;
 
 /**
  * Created by obata on 2014/09/05.
  */
-public class ObserveViewFragment extends BaseFragment {
+public class ObserveViewFragment extends BaseFragment implements SquidReader,LocationListener {
     private final String TAG = ObserveViewFragment.class.getSimpleName();
 
     private BluetoothAdapter mBluetoothAdapter = null;
 
-    private enum State {REQUEST_NONE,REQUEST_START_SQUID,REQUEST_RECEIVE_SQUID}
+
+    private enum State {REQUEST_NONE, REQUEST_START_SQUID, REQUEST_RECEIVE_SQUID}
 
     private State myState = State.REQUEST_NONE;
 
@@ -41,21 +53,43 @@ public class ObserveViewFragment extends BaseFragment {
     private BluetoothService mBlueToothService = null;
 
     private String messageQueue = null;
-    private String commandBuffer = null;
+    private StringBuffer dataBuffer = null;
+    private SquidParser squidParser = null;
+
+    private LocationManager locationManager = null;
+    private Location location; // location
+    private Double latitude = 0.0;
+    private Double longitude = 0.0;
 
     private static final String GET_COMMAND = "@GET\r\n";
     private static final String SET_COMMAND = "@SET\r\n";
 
     Timer timeOut = null;
 
+    	// flag for GPS status
+	boolean isGPSEnabled = false;
 
-  @Override
-  public View onCreateView(
-    LayoutInflater inflater,
-    ViewGroup container,
-    Bundle savedInstanceState) {
+
+    // flag for network status
+	boolean isNetworkEnabled = false;
+
+	// flag for GPS status
+	boolean canGetLocation = false;
+
+
+	// The minimum distance to change Updates in meters
+	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+
+	// The minimum time between updates in milliseconds
+	private static final long MIN_TIME_BW_UPDATES = 1000 * 30 * 1; // 1 minute
+
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_observe, container, false);
-        Button button1 = (Button)view.findViewById(R.id.button_connect);
+        Button button1 = (Button) view.findViewById(R.id.button_connect);
         button1.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -65,7 +99,7 @@ public class ObserveViewFragment extends BaseFragment {
 
         });
 
-        Button button2 = (Button)view.findViewById(R.id.button_receive);
+        Button button2 = (Button) view.findViewById(R.id.button_receive);
         button2.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -75,99 +109,195 @@ public class ObserveViewFragment extends BaseFragment {
 
         });
         messageQueue = null;
-        commandBuffer = "";
+        dataBuffer = new StringBuffer();
+        squidParser = new SquidParser(this);
+        locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         return view;
     }
 
-   private void deviceStart() {
-       Log.d(getString(R.string.button_connect),"観測開始");
-       myState = State.REQUEST_START_SQUID;
-       communicateSquid();
-   }
+    private void deviceStart() {
+        Log.d(getString(R.string.button_connect), "観測開始");
+        myState = State.REQUEST_START_SQUID;
+        communicateSquid();
+    }
 
 
-    private void deviceReceive(){
-       myState = State.REQUEST_RECEIVE_SQUID;
-       communicateSquid();
-   }
+    private void deviceReceive() {
+        myState = State.REQUEST_RECEIVE_SQUID;
+        communicateSquid();
+    }
 
     private void communicateSquid() {
         Toast.makeText(getActivity(), "接続", Toast.LENGTH_LONG).show();
-        Log.d(getString(R.string.button_connect),"接続");
+        Log.d(getString(R.string.button_connect), "接続");
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (mBluetoothAdapter == null) {
             Toast.makeText(getActivity(), R.string.not_bluetooth_available, Toast.LENGTH_LONG).show();
-            Log.e(getString(R.string.button_connect),getString(R.string.not_bluetooth_available));
-           return;
+            Log.e(getString(R.string.button_connect), getString(R.string.not_bluetooth_available));
+            return;
         }
-         if (mBlueToothService == null){
+        if (mBlueToothService == null) {
             mBlueToothService = new BluetoothService(mHandler);
         }
         if (!mBluetoothAdapter.isEnabled()) {
-            Log.d(getString(R.string.button_connect),"Buletooth disable");
+            Log.d(getString(R.string.button_connect), "Buletooth disable");
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent,0);
+            startActivityForResult(enableIntent, 0);
             return;
         }
         connectStart();
     }
 
 
-
-   public void connectStart(){
+    public void connectStart() {
         Log.v(getString(R.string.button_connect), "接続開始");
         connectTextWrite("観測開始します");
         tellSquid();
-        if (mBlueToothService.getState() == BluetoothService.STATE_NONE ) {
+        if (mBlueToothService.getState() == BluetoothService.STATE_NONE) {
             observeViewListener.viewDeviceList();
             return;
         }
-        if (mBlueToothService.getState() == BluetoothService.STATE_CONNECTED){
+        if (mBlueToothService.getState() == BluetoothService.STATE_CONNECTED) {
             queuing();
         }
 
-   }
+    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-          if (resultCode == Activity.RESULT_OK) {
-              connectStart();
-          } else {
-              Log.d(getString(R.string.button_connect), getString(R.string.not_bluetooth_enable));
-              Toast.makeText(getActivity(), R.string.not_bluetooth_enable, Toast.LENGTH_SHORT).show();
-              return;
-          }
-    }
-
-    private void connectTextWrite(String s){
-        if (s != null){
-            TextView textView = (TextView)getView().findViewById(R.id.connectView);
-            if (textView != null){
-                textView.setText(s);
-            }else{
-                 Log.e(getString(R.string.button_connect), "接続Viewが見つからない");
-            }
+        if (resultCode == Activity.RESULT_OK) {
+            connectStart();
+        } else {
+            Log.d(getString(R.string.button_connect), getString(R.string.not_bluetooth_enable));
+            Toast.makeText(getActivity(), R.string.not_bluetooth_enable, Toast.LENGTH_SHORT).show();
+            return;
         }
     }
 
-     private void receiveTextWrite(String s){
-        if (s != null){
-            TextView textView = (TextView)getView().findViewById(R.id.receiveView);
-            if (textView != null){
-                textView.setText(s);
-            }else{
-                 Log.e(getString(R.string.button_connect), "接続Viewが見つからない");
+
+    private void titleTextWrite(String s) {
+        if (s != null) {
+            EditText text = (EditText) getView().findViewById(R.id.TitleText);
+            if (text != null) {
+                text.setText(s);
+            } else {
+                Log.e(getString(R.string.button_connect), "接続Viewが見つからない");
             }
         }
     }
 
 
-    public void setDeviceAddress(String address){
+    private void connectTextWrite(String s) {
+        if (s != null) {
+            TextView textView = (TextView) getView().findViewById(R.id.connectView);
+            if (textView != null) {
+                textView.setText(s);
+            } else {
+                Log.e(getString(R.string.button_connect), "接続Viewが見つからない");
+            }
+        }
+    }
+
+    private void receiveTextWrite(String s) {
+        if (s != null) {
+            TextView textView = (TextView) getView().findViewById(R.id.receiveView);
+            if (textView != null) {
+                textView.setText(s);
+            } else {
+                Log.e(getString(R.string.button_connect), "接続Viewが見つからない");
+            }
+        }
+    }
+
+
+    public void setDeviceAddress(String address) {
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         tellSquid();
         mBlueToothService.connect(device);
 
     }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG,"onResume");
+        super.onResume();
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);        //(2)現在の年を取得
+        int month = cal.get(Calendar.MONTH) + 1;  //(3)現在の月を取得
+        int day = cal.get(Calendar.DATE);         //(4)現在の日を取得
+        int hour = cal.get(Calendar.HOUR_OF_DAY); //(5)現在の時を取得
+        int minute = cal.get(Calendar.MINUTE);    //(6)現在の分を取得
+        int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
+        String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d",year,month,day,hour,minute,second);
+
+        try{
+             // getting GPS status
+            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+			// getting GPS status
+			isGPSEnabled = locationManager
+					.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+			// getting network status
+			isNetworkEnabled = locationManager
+					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+			if (!isGPSEnabled && !isNetworkEnabled) {
+				Toast.makeText(getActivity(), "位置情報サービスに異常が発生しました",Toast.LENGTH_SHORT).show();
+			} else {
+				this.canGetLocation = true;
+				if (isNetworkEnabled) {
+					locationManager.requestLocationUpdates(
+							LocationManager.NETWORK_PROVIDER,
+							MIN_TIME_BW_UPDATES,
+							MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+					Log.d("Network", "Network");
+					if (locationManager != null) {
+						location = locationManager
+								.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+						if (location != null) {
+							latitude = location.getLatitude();
+							longitude = location.getLongitude();
+						}
+					}
+				}
+				// if GPS Enabled get lat/long using GPS Services
+				if (isGPSEnabled) {
+					if (location == null) {
+						locationManager.requestLocationUpdates(
+								LocationManager.GPS_PROVIDER,
+								MIN_TIME_BW_UPDATES,
+								MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+						Log.d("GPS Enabled", "GPS Enabled");
+						if (locationManager != null) {
+							location = locationManager
+									.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+							if (location != null) {
+								latitude = location.getLatitude();
+								longitude = location.getLongitude();
+							}
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			Log.d(TAG,e.getMessage());
+            Toast.makeText(getActivity(), "位置情報サービスに異常が発生しました",Toast.LENGTH_SHORT).show();
+		}
+
+        Log.d(TAG,"latitude:" + latitude.toString());
+        Log.d(TAG,"longitude:" + longitude.toString());
+
+        titleTextWrite(dateStr);
+
+
+    }
+
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -176,144 +306,172 @@ public class ObserveViewFragment extends BaseFragment {
             observeViewListener = (ObserveViewListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                + " must implement DeviceListFragment");
+                    + " must implement DeviceListFragment");
         }
     }
 
     @Override
     public void onDetach() {
+        Log.d(TAG,"onDetach");
         super.onDetach();
         observeViewListener = null;
-        if (timeOut != null){
-            timeOut.cancel();
-            timeOut = null;
-        }
-        if (mBlueToothService != null){
-            mBlueToothService.stop();
-        }
+        cancelCommunicate();
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+         Log.d(TAG,"onDestroy");
+        super.onDetach();
+        observeViewListener = null;
+        cancelCommunicate();
+    }
 
-
-    public interface  ObserveViewListener{
+    public interface ObserveViewListener {
         void viewDeviceList();
     }
 
-     private final Handler mHandler = new Handler() {
-         @Override
-         public void handleMessage(Message msg) {
-         switch (msg.what) {
-              case BlueToothContract.MESSAGE_STATE_CHANGE:
-                Log.d(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-                switch (msg.arg1) {
-                    case BluetoothService.STATE_CONNECTED:
-                        Log.i(TAG,"connected");
-                        queuing();
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case BlueToothContract.MESSAGE_STATE_CHANGE:
+                    Log.d(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                            Log.i(TAG, "connected");
+                            queuing();
+                            break;
+                        case BluetoothService.STATE_CONNECTING:
+                            Log.i(TAG, "connecting");
+                            break;
+                        case BluetoothService.STATE_NONE:
+                            break;
+                    }
                     break;
-                case BluetoothService.STATE_CONNECTING:
-                         Log.i(TAG,"connecting");
-                    break;
-                case BluetoothService.STATE_NONE:
-                    break;
-                }
-                break;
-              case BlueToothContract.MESSAGE_WRITE:
+                case BlueToothContract.MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
-                    Log.d(TAG,writeMessage);
-                     break;
-              case BlueToothContract.MESSAGE_READ:
+                    Log.d(TAG, writeMessage);
+                    break;
+                case BlueToothContract.MESSAGE_READ:
                     Log.d(TAG, "MESSAGE_STATE_READ:");
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    Log.d(TAG,readMessage);
+                    Log.d(TAG, readMessage);
+                    squidParser.putData(readMessage);
                     break;
-               case BlueToothContract.MESSAGE_DEVICE_NAME:
+                case BlueToothContract.MESSAGE_DEVICE_NAME:
                     Log.d(TAG, "MESSAGE_STATE_DEVICE_NAME:");
                     // save the connected device's name
-                    String connectedDeviceName = msg.getData().getString( BlueToothContract.DEVICE_NAME);
+                    String connectedDeviceName = msg.getData().getString(BlueToothContract.DEVICE_NAME);
                     Toast.makeText(getActivity(), "Connected to " + connectedDeviceName, Toast.LENGTH_SHORT).show();
                     break;
 
                 case BlueToothContract.MESSAGE_TOAST:
-                    Toast.makeText(getActivity(), msg.getData().getString( BlueToothContract.TOAST),
-                    Toast.LENGTH_SHORT).show();
-                break;
+                    Log.d(TAG,msg.getData().getString(BlueToothContract.TOAST));
+                    Toast.makeText(getActivity(), msg.getData().getString(BlueToothContract.TOAST),
+                            Toast.LENGTH_SHORT).show();
+                    cancelCommunicate();
+                    break;
             }
-         }
+        }
 
 
-     };
-        private final Handler mTimeOutHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                Log.d(TAG,"TimeOutしました");
-                if (myState == State.REQUEST_START_SQUID){
-                    connectTextWrite(getString(R.string.time_out));
-                }else if (myState == State.REQUEST_RECEIVE_SQUID) {
-                    receiveTextWrite(getString(R.string.time_out));
-                }
-                if (mBlueToothService != null) {
-                    mBlueToothService.stop();
-                }else{
-                    Log.d(TAG,"Bluetooth Service is null");
-                }
-                messageQueue = null;
+    };
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        cancelCommunicate();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG,"onPause");
+        locationManager.removeUpdates(this);
+        cancelCommunicate();
+    }
+
+    private void cancelCommunicate(){
+        if (mBlueToothService != null) {
+            mBlueToothService.stop();
+            Log.d(TAG,"BlueTooth Stop");
+        } else {
+            Log.d(TAG, "Bluetooth Service is null");
+        }
+        messageQueue = null;
+
+    }
+
+    private final Handler mTimeOutHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.d(TAG, "TimeOutしました");
+            if (myState == State.REQUEST_START_SQUID) {
+                connectTextWrite(getString(R.string.time_out));
+            } else if (myState == State.REQUEST_RECEIVE_SQUID) {
+                receiveTextWrite(getString(R.string.time_out));
             }
+            cancelCommunicate();
+        }
 
-        };
+    };
 
 
-    public void tellSquid(){
+
+    public void tellSquid() {
         String str = null;
-        if (myState == State.REQUEST_START_SQUID){
+        if (myState == State.REQUEST_START_SQUID) {
 
-           str = SET_COMMAND;
+            str = SET_COMMAND;
 
-        }else if (myState == State.REQUEST_RECEIVE_SQUID){
+        } else if (myState == State.REQUEST_RECEIVE_SQUID) {
             str = GET_COMMAND;
+            dataBuffer.setLength(0);
         }
 
 
         if (str != null) {
-           Log.d(TAG,str);
-           putQueue(str);
-        }else{
-            Log.d(TAG,getString(R.string.internal_error));
+            Log.d(TAG, str);
+            putQueue(str);
+        } else {
+            Log.d(TAG, getString(R.string.internal_error));
             Toast.makeText(getActivity(), getString(R.string.internal_error), Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    private synchronized void putQueue(String str){
-
+    private synchronized void putQueue(String str) {
+        if (messageQueue != null) {
+            Log.d(TAG, "queue is full");
+            return;
+        }
         timeOut = new Timer(true);
-        timeOut.schedule( new TimerTask() {
+        timeOut.schedule(new TimerTask() {
             @Override
             public void run() {
-                Log.d(TAG,"Time Out");
+                Log.d(TAG, "Time Out");
                 Message msg = Message.obtain();
                 mTimeOutHandler.sendMessage(msg);
             }
-        },60*1000);
-        if (messageQueue != null){
-            Log.d(TAG,"queue is full");
-            return;
-        }
+        }, 180 * 1000);
+
         messageQueue = str;
     }
 
-    private synchronized void queuing(){
-        if (timeOut != null){
-             timeOut.cancel();
-             timeOut = null;
+    private synchronized void queuing() {
+        if (timeOut != null) {
+            timeOut.cancel();
+            timeOut = null;
         }
 
-        if (messageQueue == null){
-            Log.d(TAG,"queue is empty");
+        if (messageQueue == null) {
+            Log.d(TAG, "queue is empty");
             return;
         }
 
@@ -321,9 +479,103 @@ public class ObserveViewFragment extends BaseFragment {
             mBlueToothService.write(messageQueue.getBytes("UTF-8"));
             messageQueue = null;
         } catch (UnsupportedEncodingException e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG, e.getMessage());
             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+       @Override
+    public void tokenGet(String str) {
+
+    }
+
+    @Override
+    public void tokenSet(String str) {
+
+    }
+
+    @Override
+    public void tokenOK(String str) {
+        Log.d(TAG,str);
+        if (myState == State.REQUEST_START_SQUID){
+            connectTextWrite("観測開始しました");
+        }
+    }
+
+    @Override
+    public void token200(String str) {
+        Log.d(TAG,str);
+        if (myState == State.REQUEST_RECEIVE_SQUID) {
+            Log.d(TAG, dataBuffer.toString());
+            Calendar cal = Calendar.getInstance();
+            int year = cal.get(Calendar.YEAR);        //(2)現在の年を取得
+            int month = cal.get(Calendar.MONTH) + 1;  //(3)現在の月を取得
+            int day = cal.get(Calendar.DATE);         //(4)現在の日を取得
+            int hour = cal.get(Calendar.HOUR_OF_DAY); //(5)現在の時を取得
+            int minute = cal.get(Calendar.MINUTE);    //(6)現在の分を取得
+            int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
+            String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d",year,month,day,hour,minute,second);
+
+
+
+            ContentValues values = new ContentValues();
+            values.put(ObserveDataContract.KEY_GLOBAL_ID,"aaaaa" + System.nanoTime());
+            values.put(ObserveDataContract.KEY_OBSERVE_DATE,dateStr);
+            values.put(ObserveDataContract.KEY_LATITUDE,latitude);
+            values.put(ObserveDataContract.KEY_LONGITUDE,longitude);
+            values.put(ObserveDataContract.KEY_USER_ID,"aaaaa");
+            values.put(ObserveDataContract.KEY_UPLOADED,0);
+            values.put(ObserveDataContract.KEY_DATA,dataBuffer.toString());
+
+            getActivity().getContentResolver().insert(ObserveDataContract.CONTENT_URI,values);
+            receiveTextWrite("受信完了しました");
+        }
+    }
+
+    @Override
+    public void tokenData(String str) {
+       dataBuffer.append(str);
+
+    }
+
+    @Override
+    public void tokenError(String str) {
+         Log.d(TAG,"受信データにエラーが発生しました:" + str);
+         Toast.makeText(getActivity(),"受信データにエラーが発生しました" , Toast.LENGTH_SHORT).show();
+    }
+
+        @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        Log.d(TAG,"latitude:" + latitude.toString());
+        Log.d(TAG,"longitude:" + longitude.toString());
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle bundle) {
+      switch (status) {
+        case LocationProvider.AVAILABLE:
+            Log.v("Status", "AVAILABLE");
+            break;
+        case LocationProvider.OUT_OF_SERVICE:
+            Log.v("Status", "OUT_OF_SERVICE");
+            break;
+        case LocationProvider.TEMPORARILY_UNAVAILABLE:
+            Log.v("Status", "TEMPORARILY_UNAVAILABLE");
+            break;
+        }
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
     }
 
 }

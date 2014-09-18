@@ -22,7 +22,6 @@ public class ObserveData {
     }
 
 
-
     public Integer getId() {
         return id;
     }

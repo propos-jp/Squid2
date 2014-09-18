@@ -1,12 +1,12 @@
 package jp.co.and_ex.squid2.list;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -60,7 +60,7 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
         final int[] to = {android.R.id.text1};
         cursorAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, from, to, 0);
 
-         setListAdapter(cursorAdapter);
+        setListAdapter(cursorAdapter);
 
     }
 
@@ -72,7 +72,7 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -94,21 +94,21 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
     }
 
     /**
-    * This interface must be implemented by activities that contain this
-    * fragment to allow an interaction in this fragment to be communicated
-    * to the activity and potentially other fragments contained in that
-    * activity.
-    * <p>
-    * See the Android Training lesson <a href=
-    * "http://developer.android.com/training/basics/fragments/communicating.html"
-    * >Communicating with Other Fragments</a> for more information.
-    */
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
     public interface OnFragmentInteractionListener {
 
         public void onFragmentInteraction(Integer id);
     }
 
-       @Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
@@ -145,7 +145,6 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
             } while (cursor.moveToNext());
         }
     }
-
 
 
     @Override
