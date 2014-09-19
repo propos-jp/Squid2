@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import jp.co.and_ex.squid2.MainActivity;
 import jp.co.and_ex.squid2.R;
 import jp.co.and_ex.squid2.db.ObserveDataContract;
 import jp.co.and_ex.squid2.util.BaseFragment;
@@ -36,7 +37,7 @@ import jp.co.and_ex.squid2.util.BaseFragment;
 /**
  * Created by obata on 2014/09/05.
  */
-public class ObserveViewFragment extends BaseFragment implements SquidReader,LocationListener {
+public class ObserveViewFragment extends BaseFragment implements SquidReader {
     private final String TAG = ObserveViewFragment.class.getSimpleName();
 
     private BluetoothAdapter mBluetoothAdapter = null;
@@ -56,32 +57,11 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader,Loc
     private StringBuffer dataBuffer = null;
     private SquidParser squidParser = null;
 
-    private LocationManager locationManager = null;
-    private Location location; // location
-    private Double latitude = 0.0;
-    private Double longitude = 0.0;
 
     private static final String GET_COMMAND = "@GET\r\n";
     private static final String SET_COMMAND = "@SET\r\n";
 
-    Timer timeOut = null;
-
-    	// flag for GPS status
-	boolean isGPSEnabled = false;
-
-
-    // flag for network status
-	boolean isNetworkEnabled = false;
-
-	// flag for GPS status
-	boolean canGetLocation = false;
-
-
-	// The minimum distance to change Updates in meters
-	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
-
-	// The minimum time between updates in milliseconds
-	private static final long MIN_TIME_BW_UPDATES = 1000 * 30 * 1; // 1 minute
+    private Timer timeOut = null;
 
     @Override
     public View onCreateView(
@@ -111,7 +91,6 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader,Loc
         messageQueue = null;
         dataBuffer = new StringBuffer();
         squidParser = new SquidParser(this);
-        locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         return view;
     }
 
@@ -230,67 +209,6 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader,Loc
         int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
         String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d",year,month,day,hour,minute,second);
 
-        try{
-             // getting GPS status
-            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            // getting network status
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-			// getting GPS status
-			isGPSEnabled = locationManager
-					.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-			// getting network status
-			isNetworkEnabled = locationManager
-					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-			if (!isGPSEnabled && !isNetworkEnabled) {
-				Toast.makeText(getActivity(), "位置情報サービスに異常が発生しました",Toast.LENGTH_SHORT).show();
-			} else {
-				this.canGetLocation = true;
-				if (isNetworkEnabled) {
-					locationManager.requestLocationUpdates(
-							LocationManager.NETWORK_PROVIDER,
-							MIN_TIME_BW_UPDATES,
-							MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-					Log.d("Network", "Network");
-					if (locationManager != null) {
-						location = locationManager
-								.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-						if (location != null) {
-							latitude = location.getLatitude();
-							longitude = location.getLongitude();
-						}
-					}
-				}
-				// if GPS Enabled get lat/long using GPS Services
-				if (isGPSEnabled) {
-					if (location == null) {
-						locationManager.requestLocationUpdates(
-								LocationManager.GPS_PROVIDER,
-								MIN_TIME_BW_UPDATES,
-								MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-						Log.d("GPS Enabled", "GPS Enabled");
-						if (locationManager != null) {
-							location = locationManager
-									.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-							if (location != null) {
-								latitude = location.getLatitude();
-								longitude = location.getLongitude();
-							}
-						}
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			Log.d(TAG,e.getMessage());
-            Toast.makeText(getActivity(), "位置情報サービスに異常が発生しました",Toast.LENGTH_SHORT).show();
-		}
-
-        Log.d(TAG,"latitude:" + latitude.toString());
-        Log.d(TAG,"longitude:" + longitude.toString());
 
         titleTextWrite(dateStr);
 
@@ -393,7 +311,6 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader,Loc
     public void onPause() {
         super.onPause();
         Log.d(TAG,"onPause");
-        locationManager.removeUpdates(this);
         cancelCommunicate();
     }
 
@@ -516,7 +433,17 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader,Loc
             int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
             String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d",year,month,day,hour,minute,second);
 
+            Double latitude = 0.0;
+            Double longitude = 0.0;
 
+            Location location = ((MainActivity)getActivity()).getLocation();
+            if (location != null) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+
+                Log.d(TAG, "latitude:" + latitude.toString());
+                Log.d(TAG, "longitude:" + longitude.toString());
+            }
 
             ContentValues values = new ContentValues();
             values.put(ObserveDataContract.KEY_GLOBAL_ID,"aaaaa" + System.nanoTime());
@@ -544,38 +471,6 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader,Loc
          Toast.makeText(getActivity(),"受信データにエラーが発生しました" , Toast.LENGTH_SHORT).show();
     }
 
-        @Override
-    public void onLocationChanged(Location location) {
-        this.location = location;
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        Log.d(TAG,"latitude:" + latitude.toString());
-        Log.d(TAG,"longitude:" + longitude.toString());
-    }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle bundle) {
-      switch (status) {
-        case LocationProvider.AVAILABLE:
-            Log.v("Status", "AVAILABLE");
-            break;
-        case LocationProvider.OUT_OF_SERVICE:
-            Log.v("Status", "OUT_OF_SERVICE");
-            break;
-        case LocationProvider.TEMPORARILY_UNAVAILABLE:
-            Log.v("Status", "TEMPORARILY_UNAVAILABLE");
-            break;
-        }
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
 
 }

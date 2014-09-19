@@ -12,11 +12,14 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import jp.co.and_ex.squid2.db.ObserveDataContract;
 import jp.co.and_ex.squid2.db.ObserveDataProvider;
+import jp.co.and_ex.squid2.util.OnFragmentInteractionListener;
 
 /**
  * A fragment representing a list of Items.
@@ -27,7 +30,8 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
 
     private SimpleCursorAdapter cursorAdapter;
     private OnFragmentInteractionListener mListener;
-    List<Integer> globalId_array;
+    private List<Integer> globalId_array;
+    private List<LatLng> latLngs;
 
     public static ListViewFragment newInstance() {
         ListViewFragment fragment = new ListViewFragment();
@@ -93,20 +97,6 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-
-        public void onFragmentInteraction(Integer id);
-    }
 
     @Override
     public void onDestroyView() {
@@ -133,15 +123,22 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
         }
         if (cursor.getCount() == 0) {
             globalId_array = null;
+            latLngs = null;
             return;
         }
 
         globalId_array = new ArrayList<Integer>();
+        latLngs = new ArrayList<LatLng>();
         if (cursor.moveToFirst()) {
             do {
-                Integer i = cursor.getInt(0);
+                int idIndex = cursor.getColumnIndex(ObserveDataContract.KEY_ID);
+                int latIndex = cursor.getColumnIndex(ObserveDataContract.KEY_LATITUDE);
+                int longIndex = cursor.getColumnIndex(ObserveDataContract.KEY_LONGITUDE);
 
-                globalId_array.add(i);
+                globalId_array.add(cursor.getInt(idIndex));
+                LatLng latLng = new LatLng(cursor.getDouble(latIndex),cursor.getDouble(longIndex));
+                latLngs.add(latLng);
+
             } while (cursor.moveToNext());
         }
     }
