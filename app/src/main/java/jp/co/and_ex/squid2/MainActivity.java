@@ -1,10 +1,14 @@
 package jp.co.and_ex.squid2;
 
 import android.app.ActionBar;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import Graph.GraphFragment;
 import Graph.GraphListener;
@@ -40,6 +44,15 @@ public class MainActivity extends SherlockActivity implements ListViewFragment.O
                 .setTabListener(new TabListener<ObserveViewFragment>(
                         this, getString(R.string.observe_tab_tag), ObserveViewFragment.class)));
 
+        // Check that Google Play services is available
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS != resultCode) {
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0);
+            if (dialog != null) {
+                ErrorDialogFragment errorFragment = ErrorDialogFragment.newInstance(dialog);
+                errorFragment.show(getFragmentManager(),"aaa");
+            }
+        }
     }
 
 
