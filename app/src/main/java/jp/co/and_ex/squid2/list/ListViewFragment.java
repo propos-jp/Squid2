@@ -2,13 +2,18 @@ package jp.co.and_ex.squid2.list;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Context;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -25,13 +30,16 @@ import jp.co.and_ex.squid2.util.OnFragmentInteractionListener;
  * A fragment representing a list of Items.
  * interface.
  */
-public class ListViewFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ListViewFragment extends SwipeRefreshListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private final static String TAG = ListViewFragment.class.getSimpleName();
 
     private SimpleCursorAdapter cursorAdapter;
     private OnFragmentInteractionListener mListener;
     private List<Integer> globalId_array;
     private List<LatLng> latLngs;
+
+
 
     public static ListViewFragment newInstance() {
         ListViewFragment fragment = new ListViewFragment();
@@ -52,6 +60,9 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
 
     }
 
+
+
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -65,6 +76,23 @@ public class ListViewFragment extends ListFragment implements LoaderManager.Load
         cursorAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, from, to, 0);
 
         setListAdapter(cursorAdapter);
+
+               /**
+         * Implement {@link SwipeRefreshLayout.OnRefreshListener}. When users do the "swipe to
+         * refresh" gesture, SwipeRefreshLayout invokes
+         * {@link SwipeRefreshLayout.OnRefreshListener#onRefresh onRefresh()}. In
+         * {@link SwipeRefreshLayout.OnRefreshListener#onRefresh onRefresh()}, call a method that
+         * refreshes the content. Call the same method in response to the Refresh action from the
+         * action bar.
+         */
+        setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+
+
+            }
+        });
 
     }
 
