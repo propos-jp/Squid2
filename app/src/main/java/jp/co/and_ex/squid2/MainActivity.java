@@ -8,18 +8,19 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.maps.MapFragment;
+
 
 import Graph.GraphFragment;
 import Graph.GraphListener;
 import jp.co.and_ex.squid2.list.ListViewFragment;
-import jp.co.and_ex.squid2.map.MapViewFragment;
 import jp.co.and_ex.squid2.map.MyMapFragment;
 import jp.co.and_ex.squid2.observe.DeviceListFragment;
 import jp.co.and_ex.squid2.observe.ObserveViewFragment;
@@ -89,6 +90,14 @@ public class MainActivity extends SherlockActivity implements OnFragmentInteract
 
 
     }
+
+	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+      com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
+      inflater.inflate(R.menu.optionmenu, menu);
+      return true;
+    }
+
+
 
 
     @Override
