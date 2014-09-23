@@ -3,6 +3,7 @@ package jp.co.and_ex.squid2;
 import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -28,7 +30,7 @@ import jp.co.and_ex.squid2.util.OnFragmentInteractionListener;
 import jp.co.and_ex.squid2.util.TabListener;
 
 
-public class MainActivity extends SherlockActivity implements OnFragmentInteractionListener, GraphListener, ObserveViewFragment.ObserveViewListener, DeviceListFragment.DeviceListListener ,LocationListener {
+public class  MainActivity extends SherlockActivity implements OnFragmentInteractionListener, GraphListener, ObserveViewFragment.ObserveViewListener, DeviceListFragment.DeviceListListener ,LocationListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private LocationManager locationManager = null;
 
@@ -98,7 +100,16 @@ public class MainActivity extends SherlockActivity implements OnFragmentInteract
     }
 
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menuSetting){
+            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivityForResult(intent, 0);
 
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onFragmentInteraction(Integer id) {
@@ -203,12 +214,14 @@ public class MainActivity extends SherlockActivity implements OnFragmentInteract
     }
 
     @Override
-    public void onLocationChanged(Location location) {
+    public void onLocationChanged(Location location)
+    {
         this.location = location;
     }
 
     @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
+    public void onStatusChanged(String s, int i, Bundle bundle)
+    {
 
     }
 
