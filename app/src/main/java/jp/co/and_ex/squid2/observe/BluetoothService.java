@@ -250,7 +250,7 @@ public class BluetoothService {
                 mmSocket.connect();
             } catch (IOException e) {
                 // Close the socket
-                Log.e(TAG,"connection failed",e);
+                Log.e(TAG, "connection failed", e);
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
@@ -326,7 +326,7 @@ public class BluetoothService {
                     // Start the service over to restart listening mode
                     break;
                 } catch (InterruptedException e) {
-                    Log.d(TAG,e.getMessage());
+                    Log.d(TAG, e.getMessage());
                 }
             }
         }

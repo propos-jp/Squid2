@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
- <PreferenceCategory android:title="ユーザー名の登録">
-            <EditTextPreference
-                android:key="user_name"
-                android:title="ユーザー名"
-                android:summary="Squidクラウドのユーザー名を登録してください"
-                android:dialogTitle="ユーザー名" />
-     </PreferenceCategory>
- </PreferenceScreen>
+    <PreferenceCategory android:title="ユーザー名の登録">
+        <EditTextPreference
+            android:key="user_name"
+            android:title="ユーザー名"
+            android:summary="Squidクラウドのユーザー名を登録してください"
+            android:dialogTitle="ユーザー名" />
+    </PreferenceCategory>
+</PreferenceScreen>

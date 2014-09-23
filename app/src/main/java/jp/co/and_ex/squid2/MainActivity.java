@@ -16,8 +16,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -26,15 +24,16 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringWriter;
 
 import Graph.GraphFragment;
 import Graph.GraphListener;
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 import jp.co.and_ex.squid2.db.ObserveDataContract;
 import jp.co.and_ex.squid2.list.ListViewFragment;
 import jp.co.and_ex.squid2.map.MyMapFragment;
@@ -280,21 +279,21 @@ public class MainActivity extends SherlockActivity implements OnFragmentInteract
             pathExternalDir.mkdirs();
         }
 
-        download_id = downloadManager.enqueue(request);
+//        download_id = downloadManager.enqueue(request);
         Log.d(TAG, "Start Download download Id = " + download_id);
+        uploadCSV();
     }
 
-    private void parseCSV(String uri)
-    {
+    private void parseCSV(String uri) {
         try {
-            CSVReader reader = new CSVReader(new FileReader(Uri.parse(uri).getPath()),',', '"', 1);
-            String [] nextLine;
+            CSVReader reader = new CSVReader(new FileReader(Uri.parse(uri).getPath()), ',', '"', 1);
+            String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
                 // nextLine[] is an array of values from the line
-                Log.d(TAG,nextLine[0] + ":"+ nextLine[1] + "etc...");
+                Log.d(TAG, nextLine[0] + ":" + nextLine[1] + "etc...");
                 Cursor c = getContentResolver().query(ObserveDataContract.CONTENT_URI,
-                    new String[]{ObserveDataContract.KEY_GLOBAL_ID},
-                    ObserveDataContract.KEY_GLOBAL_ID + "=" + nextLine[0],null,null);
+                        new String[]{ObserveDataContract.KEY_GLOBAL_ID},
+                        ObserveDataContract.KEY_GLOBAL_ID + "=" + nextLine[0], null, null);
 
                 if (c.getCount() == 0) {
                     double latitude = 0.0;
@@ -310,19 +309,49 @@ public class MainActivity extends SherlockActivity implements OnFragmentInteract
                     values.put(ObserveDataContract.KEY_LONGITUDE, longitude);
                     values.put(ObserveDataContract.KEY_USER_ID, nextLine[5]);
                     values.put(ObserveDataContract.KEY_UPLOADED, 0);
-                    values.put(ObserveDataContract.KEY_DATA,nextLine[6]);
+                    values.put(ObserveDataContract.KEY_DATA, nextLine[6]);
 
-                    getContentResolver().insert(ObserveDataContract.CONTENT_URI,values);
+                    getContentResolver().insert(ObserveDataContract.CONTENT_URI, values);
 
                 }
 
             }
-         } catch (FileNotFoundException e) {
-            Log.e(TAG,e.getMessage());
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
     }
+
+    private void uploadCSV() {
+        Cursor cursor = getContentResolver().query(ObserveDataContract.CONTENT_URI, null, null, null, null);
+
+        if (cursor.getCount() == 0) {
+            return;
+        }
+        if (cursor.moveToFirst()) {
+            StringWriter stringWriter = new StringWriter();
+            CSVWriter writer = new CSVWriter(stringWriter);
+            do {
+                String global_id = cursor.getString((ObserveDataContract.FIELD_ORDER.GLOBAL_ID.ordinal()));
+                String observe_date = cursor.getString((ObserveDataContract.FIELD_ORDER.OBSERVE_DATE.ordinal()));
+                String latitude = Double.toString(cursor.getDouble(ObserveDataContract.FIELD_ORDER.LATITUDE.ordinal()));
+                String longitude = Double.toString(cursor.getDouble(ObserveDataContract.FIELD_ORDER.LONGITUDE.ordinal()));
+                String userId = cursor.getString((ObserveDataContract.FIELD_ORDER.USER_ID.ordinal()));
+                String data = cursor.getString((ObserveDataContract.FIELD_ORDER.DATA.ordinal()));
+                String[] entries = {global_id, observe_date, latitude, longitude, userId, data};
+                writer.writeNext(entries);
+
+            } while (cursor.moveToNext());
+            try {
+                writer.close();
+            } catch (IOException e) {
+                Log.d(TAG, e.getMessage());
+            }
+            Log.d(TAG, stringWriter.toString());
+        }
+    }
+
 
     public class DownloadReceiver extends BroadcastReceiver {
 
@@ -340,9 +369,10 @@ public class MainActivity extends SherlockActivity implements OnFragmentInteract
                                 .getColumnIndex(DownloadManager.COLUMN_STATUS);
                         if (DownloadManager.STATUS_SUCCESSFUL == c
                                 .getInt(columnIndex)) {
-                                    String uriString = c
+                            String uriString = c
                                     .getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
                             parseCSV(uriString);
+                            uploadCSV();
 
                         } else {
 

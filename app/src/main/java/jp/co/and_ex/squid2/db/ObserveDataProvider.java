@@ -122,7 +122,7 @@ public class ObserveDataProvider extends ContentProvider {
                 break;
             default:
 
-         }
+        }
         String orderBy;
         if (TextUtils.isEmpty(sortOrder)) {
             orderBy = ObserveDataContract.KEY_ID + " DESC"; // 新しい順

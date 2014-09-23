@@ -3,8 +3,6 @@ package jp.co.and_ex.squid2;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.view.Menu;
-import android.view.MenuItem;
 
 
 public class SettingActivity extends Activity {

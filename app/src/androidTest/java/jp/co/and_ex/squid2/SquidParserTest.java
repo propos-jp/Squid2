@@ -55,7 +55,7 @@ public class SquidParserTest extends AndroidTestCase implements SquidReader {
         assertEquals(1, setCalled);
         assertEquals(0, okReturned);
         assertEquals(0, line200Returned);
-        assertEquals(0,dataReturned);
+        assertEquals(0, dataReturned);
         assertEquals(dataBuffer.length(), 0);
     }
 
@@ -69,7 +69,7 @@ public class SquidParserTest extends AndroidTestCase implements SquidReader {
         assertEquals(1, okReturned);
         assertEquals(1, line200Returned);
         assertEquals(dataBuffer.length(), 0);
-        assertEquals(0,dataReturned);
+        assertEquals(0, dataReturned);
         assertEquals(0, errorReturned);
     }
 
@@ -111,11 +111,11 @@ public class SquidParserTest extends AndroidTestCase implements SquidReader {
 
         assertEquals(data, dataBuffer.toString());
         assertEquals(data.length(), dataBuffer.length());
-        assertEquals(4,dataReturned);
+        assertEquals(4, dataReturned);
         assertEquals(0, errorReturned);
     }
 
-    public void testCal(){
+    public void testCal() {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);        //(2)現在の年を取得
         int month = cal.get(Calendar.MONTH) + 1;  //(3)現在の月を取得
@@ -123,8 +123,8 @@ public class SquidParserTest extends AndroidTestCase implements SquidReader {
         int hour = cal.get(Calendar.HOUR_OF_DAY); //(5)現在の時を取得
         int minute = cal.get(Calendar.MINUTE);    //(6)現在の分を取得
         int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
-        String str = String.format("%04d/%02d%02d,%02d:%02d:%02d",year,month,day,hour,minute,second);
-        Log.i("test",str);
+        String str = String.format("%04d/%02d%02d,%02d:%02d:%02d", year, month, day, hour, minute, second);
+        Log.i("test", str);
     }
 
     @Override

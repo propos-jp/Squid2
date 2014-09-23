@@ -47,7 +47,7 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
         if (savedInstanceState == null) {
             initMap();
         }
-       // Loaderの初期化
+        // Loaderの初期化
         getLoaderManager().initLoader(0, null, this);
     }
 

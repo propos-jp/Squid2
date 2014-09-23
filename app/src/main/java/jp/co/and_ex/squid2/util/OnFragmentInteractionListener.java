@@ -5,5 +5,6 @@ package jp.co.and_ex.squid2.util;
  */
 public interface OnFragmentInteractionListener {
     public void onFragmentInteraction(Integer id);
+
     public void onFragmentRefresh();
 }

@@ -129,7 +129,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
             if (data != null && data.length() > 0) {
 
                 String[] lines = data.split(Pattern.quote("\r\n"));
-                if (lines.length == 1){
+                if (lines.length == 1) {
                     lines = data.split(Pattern.quote("\n"));
                 }
                 Log.d("line count ", new Integer(lines.length).toString());
@@ -149,7 +149,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
 
                         x = Double.valueOf(ondo.trim());
                         y = Double.valueOf(depth.trim());
-                        if (x == 0 || y == 0){
+                        if (x == 0 || y == 0) {
                             continue;
                         }
                         x = 0.1123 * x - 25.664;

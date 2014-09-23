@@ -1,10 +1,9 @@
 package jp.co.and_ex.squid2.list;
 
 
-
+import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.app.ListFragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -23,7 +22,7 @@ public class SwipeRefreshListFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
 
         // Create the list fragment's content view by calling the super method
         final View listFragmentView = super.onCreateView(inflater, container, savedInstanceState);
@@ -100,7 +99,7 @@ public class SwipeRefreshListFragment extends ListFragment {
      * view returned from
      * {@link android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)}
      * which is a {@link android.view.ViewGroup}.
-     *
+     * <p/>
      * <p>To enable 'swipe-to-refresh' support via the {@link android.widget.ListView} we need to
      * override the default behavior and properly signal when a gesture is possible. This is done by
      * overriding {@link #canChildScrollUp()}.

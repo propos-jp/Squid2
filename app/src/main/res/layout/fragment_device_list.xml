@@ -17,7 +17,6 @@
         android:text="@string/close"
         android:id="@+id/closeDeviceButton"
         android:layout_below="@+id/deviceListView"
-        android:layout_alignParentStart="true"
-       />
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

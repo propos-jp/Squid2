@@ -1,19 +1,14 @@
 package jp.co.and_ex.squid2.list;
 
 import android.app.Activity;
-import android.app.ListFragment;
-import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -40,7 +35,6 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
     private List<LatLng> latLngs;
 
 
-
     public static ListViewFragment newInstance() {
         ListViewFragment fragment = new ListViewFragment();
         return fragment;
@@ -61,8 +55,6 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
     }
 
 
-
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -77,7 +69,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
 
         setListAdapter(cursorAdapter);
 
-               /**
+        /**
          * Implement {@link SwipeRefreshLayout.OnRefreshListener}. When users do the "swipe to
          * refresh" gesture, SwipeRefreshLayout invokes
          * {@link SwipeRefreshLayout.OnRefreshListener#onRefresh onRefresh()}. In
@@ -91,13 +83,11 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
                 Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
                 mListener.onFragmentRefresh();
 
-                
+
             }
         });
 
     }
-
-    
 
 
     @Override
@@ -167,7 +157,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
                 int longIndex = cursor.getColumnIndex(ObserveDataContract.KEY_LONGITUDE);
 
                 globalId_array.add(cursor.getInt(idIndex));
-                LatLng latLng = new LatLng(cursor.getDouble(latIndex),cursor.getDouble(longIndex));
+                LatLng latLng = new LatLng(cursor.getDouble(latIndex), cursor.getDouble(longIndex));
                 latLngs.add(latLng);
 
             } while (cursor.moveToNext());

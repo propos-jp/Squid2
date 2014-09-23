@@ -4,13 +4,9 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,9 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
-import java.security.Provider;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -200,7 +194,7 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
     @Override
     public void onResume() {
-        Log.d(TAG,"onResume");
+        Log.d(TAG, "onResume");
         super.onResume();
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);        //(2)現在の年を取得
@@ -209,14 +203,13 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
         int hour = cal.get(Calendar.HOUR_OF_DAY); //(5)現在の時を取得
         int minute = cal.get(Calendar.MINUTE);    //(6)現在の分を取得
         int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
-        String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d",year,month,day,hour,minute,second);
+        String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d", year, month, day, hour, minute, second);
 
 
         titleTextWrite(dateStr);
 
 
     }
-
 
 
     @Override
@@ -232,7 +225,7 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
     @Override
     public void onDetach() {
-        Log.d(TAG,"onDetach");
+        Log.d(TAG, "onDetach");
         super.onDetach();
         observeViewListener = null;
         cancelCommunicate();
@@ -242,7 +235,7 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
     @Override
     public void onDestroy() {
         super.onDestroy();
-         Log.d(TAG,"onDestroy");
+        Log.d(TAG, "onDestroy");
         super.onDetach();
         observeViewListener = null;
         cancelCommunicate();
@@ -292,7 +285,7 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
                     break;
 
                 case BlueToothContract.MESSAGE_TOAST:
-                    Log.d(TAG,msg.getData().getString(BlueToothContract.TOAST));
+                    Log.d(TAG, msg.getData().getString(BlueToothContract.TOAST));
                     Toast.makeText(getActivity(), msg.getData().getString(BlueToothContract.TOAST),
                             Toast.LENGTH_SHORT).show();
                     cancelCommunicate();
@@ -312,14 +305,14 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG,"onPause");
+        Log.d(TAG, "onPause");
         cancelCommunicate();
     }
 
-    private void cancelCommunicate(){
+    private void cancelCommunicate() {
         if (mBlueToothService != null) {
             mBlueToothService.stop();
-            Log.d(TAG,"BlueTooth Stop");
+            Log.d(TAG, "BlueTooth Stop");
         } else {
             Log.d(TAG, "Bluetooth Service is null");
         }
@@ -340,7 +333,6 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
         }
 
     };
-
 
 
     public void tellSquid() {
@@ -403,7 +395,7 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
         }
     }
 
-       @Override
+    @Override
     public void tokenGet(String str) {
 
     }
@@ -415,15 +407,15 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
     @Override
     public void tokenOK(String str) {
-        Log.d(TAG,str);
-        if (myState == State.REQUEST_START_SQUID){
+        Log.d(TAG, str);
+        if (myState == State.REQUEST_START_SQUID) {
             connectTextWrite("観測開始しました");
         }
     }
 
     @Override
     public void token200(String str) {
-        Log.d(TAG,str);
+        Log.d(TAG, str);
         if (myState == State.REQUEST_RECEIVE_SQUID) {
             Log.d(TAG, dataBuffer.toString());
             Calendar cal = Calendar.getInstance();
@@ -433,12 +425,12 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
             int hour = cal.get(Calendar.HOUR_OF_DAY); //(5)現在の時を取得
             int minute = cal.get(Calendar.MINUTE);    //(6)現在の分を取得
             int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
-            String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d",year,month,day,hour,minute,second);
+            String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d", year, month, day, hour, minute, second);
 
             Double latitude = 0.0;
             Double longitude = 0.0;
 
-            Location location = ((MainActivity)getActivity()).getLocation();
+            Location location = ((MainActivity) getActivity()).getLocation();
             if (location != null) {
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
@@ -449,34 +441,33 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-            String userId = pref.getString("user_name","unknown");
+            String userId = pref.getString("user_name", "unknown");
 
-             ContentValues values = new ContentValues();
-            values.put(ObserveDataContract.KEY_GLOBAL_ID,userId + System.nanoTime());
-            values.put(ObserveDataContract.KEY_OBSERVE_DATE,dateStr);
-            values.put(ObserveDataContract.KEY_LATITUDE,latitude);
-            values.put(ObserveDataContract.KEY_LONGITUDE,longitude);
-            values.put(ObserveDataContract.KEY_USER_ID,userId);
-            values.put(ObserveDataContract.KEY_UPLOADED,0);
-            values.put(ObserveDataContract.KEY_DATA,dataBuffer.toString());
+            ContentValues values = new ContentValues();
+            values.put(ObserveDataContract.KEY_GLOBAL_ID, userId + System.nanoTime());
+            values.put(ObserveDataContract.KEY_OBSERVE_DATE, dateStr);
+            values.put(ObserveDataContract.KEY_LATITUDE, latitude);
+            values.put(ObserveDataContract.KEY_LONGITUDE, longitude);
+            values.put(ObserveDataContract.KEY_USER_ID, userId);
+            values.put(ObserveDataContract.KEY_UPLOADED, 0);
+            values.put(ObserveDataContract.KEY_DATA, dataBuffer.toString());
 
-            getActivity().getContentResolver().insert(ObserveDataContract.CONTENT_URI,values);
+            getActivity().getContentResolver().insert(ObserveDataContract.CONTENT_URI, values);
             receiveTextWrite("受信完了しました");
         }
     }
 
     @Override
     public void tokenData(String str) {
-       dataBuffer.append(str);
+        dataBuffer.append(str);
 
     }
 
     @Override
     public void tokenError(String str) {
-         Log.d(TAG,"受信データにエラーが発生しました:" + str);
-         Toast.makeText(getActivity(),"受信データにエラーが発生しました" , Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "受信データにエラーが発生しました:" + str);
+        Toast.makeText(getActivity(), "受信データにエラーが発生しました", Toast.LENGTH_SHORT).show();
     }
-
 
 
 }
