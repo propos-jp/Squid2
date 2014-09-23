@@ -89,16 +89,15 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
             @Override
             public void onRefresh() {
                 Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                mListener.onFragmentRefresh();
 
-                recieveData();
+                
             }
         });
 
     }
 
-    private void recieveData() {
-
-    }
+    
 
 
     @Override

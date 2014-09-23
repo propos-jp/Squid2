@@ -26,7 +26,7 @@ dependencies {
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.android.support:support-v4:20.0.0'
-    compile 'com.google.android.gms:play-services:5.2.08'
+    compile 'com.google.android.gms:play-services:5.0.89'
 }
 
 

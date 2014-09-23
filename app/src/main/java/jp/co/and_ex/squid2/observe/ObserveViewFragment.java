@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,6 +14,7 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -445,12 +447,16 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
                 Log.d(TAG, "longitude:" + longitude.toString());
             }
 
-            ContentValues values = new ContentValues();
-            values.put(ObserveDataContract.KEY_GLOBAL_ID,"aaaaa" + System.nanoTime());
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+            String userId = pref.getString("user_name","unknown");
+
+             ContentValues values = new ContentValues();
+            values.put(ObserveDataContract.KEY_GLOBAL_ID,userId + System.nanoTime());
             values.put(ObserveDataContract.KEY_OBSERVE_DATE,dateStr);
             values.put(ObserveDataContract.KEY_LATITUDE,latitude);
             values.put(ObserveDataContract.KEY_LONGITUDE,longitude);
-            values.put(ObserveDataContract.KEY_USER_ID,"aaaaa");
+            values.put(ObserveDataContract.KEY_USER_ID,userId);
             values.put(ObserveDataContract.KEY_UPLOADED,0);
             values.put(ObserveDataContract.KEY_DATA,dataBuffer.toString());
 

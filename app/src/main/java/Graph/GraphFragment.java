@@ -129,6 +129,9 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
             if (data != null && data.length() > 0) {
 
                 String[] lines = data.split(Pattern.quote("\r\n"));
+                if (lines.length == 1){
+                    lines = data.split(Pattern.quote("\n"));
+                }
                 Log.d("line count ", new Integer(lines.length).toString());
                 Double y0 = 0.0;
                 for (Integer i = 0; i < lines.length; i++) {

@@ -65,7 +65,7 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
     }
 
     private void initMaker() {
-        if (latLngs != null) {
+        if (latLngs != null && googleMap != null) {
             hashMap = new HashMap<String, Integer>();
             for (int i = 0; i < latLngs.size(); i++) {
                 MarkerOptions options = new MarkerOptions();

@@ -18,6 +18,7 @@ public class ObserveDataProvider extends ContentProvider {
 
     private static final int OBSERVE_DATA = 1;
     private static final int KEY_ID = 2;
+    private static final int GLOBAL_ID = 3;
 
 
     public static final Uri CONTENT_URI = ObserveDataContract.CONTENT_URI;
@@ -28,6 +29,7 @@ public class ObserveDataProvider extends ContentProvider {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         URI_MATCHER.addURI(ObserveDataContract.AUTHORITY, "observe_data", OBSERVE_DATA);
         URI_MATCHER.addURI(ObserveDataContract.AUTHORITY, "observe_data/#", KEY_ID);
+
     }
 
     private DataBaseHelper mDBHelper;
@@ -119,8 +121,8 @@ public class ObserveDataProvider extends ContentProvider {
                         + uri.getPathSegments().get(1));
                 break;
             default:
-                throw new IllegalArgumentException("Unknown URL " + uri);
-        }
+
+         }
         String orderBy;
         if (TextUtils.isEmpty(sortOrder)) {
             orderBy = ObserveDataContract.KEY_ID + " DESC"; // 新しい順

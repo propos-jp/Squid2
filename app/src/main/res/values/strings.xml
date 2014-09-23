@@ -8,5 +8,6 @@
     <string name="observe_view_fragment">"ObserveViewFragment"</string>
     <string name="internal_error">内部エラーが発生しました</string>
     <string name="title_activity_setting">SettingActivity</string>
-
+    <string name="downloadCSV">http://shrouded-inlet-2117.herokuapp.com/data.csv</string>
+    <string name="data.csv">data.csv</string>
 </resources>
