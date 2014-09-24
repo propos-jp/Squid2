@@ -9,11 +9,13 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -264,6 +266,11 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
             return;
         }
         mData = new ArrayList<ObserveData>();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+
+
+
         if (cursor.moveToFirst()) {
             do {
                 ObserveData data = new ObserveData();
@@ -273,6 +280,9 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
                 data.setLatitude(cursor.getDouble(ObserveDataContract.FIELD_ORDER.LATITUDE.ordinal()));
                 data.setLongitude(cursor.getDouble(ObserveDataContract.FIELD_ORDER.LONGITUDE.ordinal()));
                 data.setData(cursor.getString(ObserveDataContract.FIELD_ORDER.DATA.ordinal()));
+
+
+
                 mData.add(data);
             } while (cursor.moveToNext());
         }

@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +32,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
 
     private final static String TAG = ListViewFragment.class.getSimpleName();
 
-    private SimpleCursorAdapter cursorAdapter;
+    private MyCursorAdapter cursorAdapter;
     private OnFragmentInteractionListener mListener;
     private List<Integer> globalId_array;
     private List<LatLng> latLngs;
@@ -63,10 +66,16 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
         getLoaderManager().initLoader(0, null, this);
 
         // CursorAdapter をセット. フラグの部分は autoRequery はしないようにセットするので注意
-        final String[] from = {ObserveDataContract.KEY_OBSERVE_DATE};
+        final String[] from = {ObserveDataContract.KEY_OBSERVE_DATE,ObserveDataContract.KEY_USER_ID};
         final int[] to = {android.R.id.text1};
-        cursorAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, from, to, 0);
 
+         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+         String myId = pref.getString("user_name", "");
+
+
+        cursorAdapter = new MyCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, from, to, 0);
+        cursorAdapter.setMyId(myId);
         setListAdapter(cursorAdapter);
 
         /**
@@ -172,5 +181,6 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
         // CursorLoader と CursorAdapter を使用する上での決まり文句
         cursorAdapter.swapCursor(null);
     }
+
 
 }

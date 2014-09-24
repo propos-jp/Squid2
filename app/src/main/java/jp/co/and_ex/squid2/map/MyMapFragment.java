@@ -4,15 +4,18 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -35,6 +38,7 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
     private List<Integer> globalId_array;
     private List<LatLng> latLngs;
     private List<String> titles;
+    private List<String> userIds;
     private HashMap<String, Integer> hashMap;
     private OnFragmentInteractionListener mListener;
 
@@ -67,11 +71,21 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
     private void initMaker() {
         if (latLngs != null && googleMap != null) {
             hashMap = new HashMap<String, Integer>();
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+            String myId = pref.getString("user_name", "");
+
             for (int i = 0; i < latLngs.size(); i++) {
                 MarkerOptions options = new MarkerOptions();
                 options.position(latLngs.get(i));
                 options.title(Integer.toString(i + 1));
                 options.snippet(titles.get(i));
+
+                if (myId.length() > 0 && myId.equals(userIds.get(i))){
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                }else{
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                }
 
                 Marker marker = googleMap.addMarker(options);
                 hashMap.put(marker.getId(), globalId_array.get(i));
@@ -123,12 +137,15 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
             globalId_array = null;
             latLngs = null;
             titles = null;
+            userIds = null;
             return;
         }
 
         globalId_array = new ArrayList<Integer>();
         latLngs = new ArrayList<LatLng>();
         titles = new ArrayList<String>();
+        userIds = new ArrayList<String>();
+
 
         if (cursor.moveToFirst()) {
             do {
@@ -136,6 +153,7 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
                 int titleIndex = cursor.getColumnIndex(ObserveDataContract.KEY_OBSERVE_DATE);
                 int latIndex = cursor.getColumnIndex(ObserveDataContract.KEY_LATITUDE);
                 int longIndex = cursor.getColumnIndex(ObserveDataContract.KEY_LONGITUDE);
+                int userIdIndex = cursor.getColumnIndex(ObserveDataContract.KEY_USER_ID);
                 Log.d(TAG, "id:" + Integer.toString(cursor.getInt(idIndex)));
                 Log.d(TAG, "latitude" + Double.toString(cursor.getInt(latIndex)));
                 Log.d(TAG, "longitude" + Double.toString(cursor.getInt(longIndex)));
@@ -143,7 +161,7 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
                 LatLng latLng = new LatLng(cursor.getDouble(latIndex), cursor.getDouble(longIndex));
                 latLngs.add(latLng);
                 titles.add(cursor.getString(titleIndex));
-
+                userIds.add(cursor.getString(userIdIndex));
             } while (cursor.moveToNext());
         }
         initMaker();
