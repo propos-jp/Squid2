@@ -164,7 +164,7 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
 
     private void connectTextWrite(String s) {
-        if (s != null) {
+        if (s != null && getView() != null) {
             TextView textView = (TextView) getView().findViewById(R.id.connectView);
             if (textView != null) {
                 textView.setText(s);
@@ -175,7 +175,7 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
     }
 
     private void receiveTextWrite(String s) {
-        if (s != null) {
+        if (s != null && getView() != null) {
             TextView textView = (TextView) getView().findViewById(R.id.receiveView);
             if (textView != null) {
                 textView.setText(s);
@@ -412,6 +412,9 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
         if (myState == State.REQUEST_START_SQUID) {
             connectTextWrite("観測開始しました");
         }
+        if (timeOut != null) {
+            timeOut.cancel();
+        }
     }
 
     @Override
@@ -460,6 +463,9 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
     @Override
     public void tokenData(String str) {
+        if (dataBuffer.length() == 0){
+            receiveTextWrite("受信開始しました");
+        }
         dataBuffer.append(str);
 
     }

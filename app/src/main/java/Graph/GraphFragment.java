@@ -32,8 +32,13 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import jp.co.and_ex.squid2.R;
@@ -295,7 +300,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
 
 
         TextView view2 = (TextView) getView().findViewById(R.id.textObserveDate);
-        view2.setText(data.getObserve_date());
+        view2.setText(getJST(data.getObserve_date()));
         TextView view3 = (TextView) getView().findViewById(R.id.textLatitude);
         view3.setText(Double.toString(data.getLatitude()));
         TextView view4 = (TextView) getView().findViewById(R.id.textLongtude);
@@ -314,5 +319,28 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+    private String getJST(String utc)
+    {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+            Date gmtDate = sdf.parse(utc);
+
+            Calendar cal = Calendar.getInstance();
+
+            cal.setTime(gmtDate);
+            cal.add(Calendar.HOUR,9);
+
+            sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("JST"));
+            String jst = sdf.format(cal.getTime());
+            Log.d(TAG,utc + " -> " + jst);
+            return jst;
+        } catch (ParseException e) {
+            Log.d(TAG,e.getMessage());
+        }
+        return utc;
     }
 }
