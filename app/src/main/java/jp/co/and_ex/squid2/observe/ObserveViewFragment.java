@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -418,14 +419,14 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
         Log.d(TAG, str);
         if (myState == State.REQUEST_RECEIVE_SQUID) {
             Log.d(TAG, dataBuffer.toString());
-            Calendar cal = Calendar.getInstance();
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             int year = cal.get(Calendar.YEAR);        //(2)現在の年を取得
             int month = cal.get(Calendar.MONTH) + 1;  //(3)現在の月を取得
             int day = cal.get(Calendar.DATE);         //(4)現在の日を取得
             int hour = cal.get(Calendar.HOUR_OF_DAY); //(5)現在の時を取得
             int minute = cal.get(Calendar.MINUTE);    //(6)現在の分を取得
             int second = cal.get(Calendar.SECOND);    //(7)現在の秒を取得
-            String dateStr = String.format("%04d/%02d/%02d,%02d:%02d:%02d", year, month, day, hour, minute, second);
+            String dateStr = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 
             Double latitude = 0.0;
             Double longitude = 0.0;

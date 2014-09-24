@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -23,6 +24,8 @@ import java.util.List;
 import jp.co.and_ex.squid2.db.ObserveDataContract;
 import jp.co.and_ex.squid2.db.ObserveDataProvider;
 import jp.co.and_ex.squid2.util.OnFragmentInteractionListener;
+
+
 
 /**
  * A fragment representing a list of Items.
