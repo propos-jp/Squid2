@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import jp.co.and_ex.squid2.db.ObserveDataContract;
+import jp.co.and_ex.squid2.util.Common;
 
 /**
  * Created by obata on 2014/09/24.
@@ -75,9 +76,12 @@ public class MyCursorAdapter extends SimpleCursorAdapter implements SimpleCursor
     @Override
     public boolean setViewValue(View view, Cursor cursor, int column) {
         int dateColumn = cursor.getColumnIndex(ObserveDataContract.KEY_OBSERVE_DATE);
+        int userColumn = cursor.getColumnIndex(ObserveDataContract.KEY_USER_ID);
         if (column == dateColumn) {
             String dateString = cursor.getString(dateColumn);
-            ((TextView)view).setText(getJST(dateString));
+            String userId = cursor.getString(userColumn);
+
+            ((TextView)view).setText(userId + ":" + Common.getJST(dateString));
 
             return true; // Return true to show you've handled this column
         }
@@ -85,27 +89,6 @@ public class MyCursorAdapter extends SimpleCursorAdapter implements SimpleCursor
         return false;
     }
 
-    private String getJST(String utc)
-    {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date gmtDate = sdf.parse(utc);
 
-            Calendar cal = Calendar.getInstance();
-
-            cal.setTime(gmtDate);
-            cal.add(Calendar.HOUR,9);
-
-            sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("JST"));
-            String jst = sdf.format(cal.getTime());
-            Log.d(TAG,utc + " -> " + jst);
-            return jst;
-        } catch (ParseException e) {
-            Log.d(TAG,e.getMessage());
-        }
-        return utc;
-    }
 }
 

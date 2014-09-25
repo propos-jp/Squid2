@@ -27,6 +27,7 @@ import java.util.List;
 import jp.co.and_ex.squid2.MainActivity;
 import jp.co.and_ex.squid2.db.ObserveDataContract;
 import jp.co.and_ex.squid2.db.ObserveDataProvider;
+import jp.co.and_ex.squid2.util.Common;
 import jp.co.and_ex.squid2.util.OnFragmentInteractionListener;
 
 /**
@@ -160,7 +161,7 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
                 globalId_array.add(cursor.getInt(idIndex));
                 LatLng latLng = new LatLng(cursor.getDouble(latIndex), cursor.getDouble(longIndex));
                 latLngs.add(latLng);
-                titles.add(cursor.getString(titleIndex));
+                titles.add(cursor.getString(userIdIndex) + ":" + Common.getJST(cursor.getString(titleIndex)));
                 userIds.add(cursor.getString(userIdIndex));
             } while (cursor.moveToNext());
         }
