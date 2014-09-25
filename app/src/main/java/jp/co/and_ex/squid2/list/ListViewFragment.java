@@ -80,6 +80,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
         cursorAdapter = new MyCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, from, to, 0);
         cursorAdapter.setMyId(myId);
         setListAdapter(cursorAdapter);
+        stopRefresh();
 
         /**
          * Implement {@link SwipeRefreshLayout.OnRefreshListener}. When users do the "swipe to
@@ -117,6 +118,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
     public void onDetach() {
         super.onDetach();
         mListener = null;
+
     }
 
 
@@ -137,6 +139,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
 
         // Loaderの廃棄
         getLoaderManager().destroyLoader(0);
+
     }
 
     @Override
@@ -174,6 +177,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
 
             } while (cursor.moveToNext());
         }
+        stopRefresh();
     }
 
 
@@ -183,6 +187,7 @@ public class ListViewFragment extends SwipeRefreshListFragment implements Loader
 
         // CursorLoader と CursorAdapter を使用する上での決まり文句
         cursorAdapter.swapCursor(null);
+        stopRefresh();
     }
 
 

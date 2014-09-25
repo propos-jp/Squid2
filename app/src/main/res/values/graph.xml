@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="observe_user">観測者</string>
     <string name="observe_date">観測日時</string>
     <string name="close">閉じる</string>
     <string name="latitude_name">緯度</string>

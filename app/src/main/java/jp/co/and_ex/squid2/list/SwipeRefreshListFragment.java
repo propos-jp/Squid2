@@ -55,6 +55,19 @@ public class SwipeRefreshListFragment extends ListFragment {
         mSwipeRefreshLayout.setOnRefreshListener(listener);
     }
 
+    public void stopRefresh()
+    {
+        if (isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        stopRefresh();
+    }
+
     /**
      * Returns whether the {@link android.support.v4.widget.SwipeRefreshLayout} is currently
      * refreshing or not.

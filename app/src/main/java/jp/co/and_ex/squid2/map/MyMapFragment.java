@@ -79,8 +79,7 @@ public class MyMapFragment extends MapFragment implements LoaderManager.LoaderCa
             for (int i = 0; i < latLngs.size(); i++) {
                 MarkerOptions options = new MarkerOptions();
                 options.position(latLngs.get(i));
-                options.title(Integer.toString(i + 1));
-                options.snippet(titles.get(i));
+                options.title(titles.get(i));
 
                 if (myId.length() > 0 && myId.equals(userIds.get(i))){
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));

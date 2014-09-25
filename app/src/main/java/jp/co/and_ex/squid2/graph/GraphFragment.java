@@ -285,6 +285,7 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
                 data.setLatitude(cursor.getDouble(ObserveDataContract.FIELD_ORDER.LATITUDE.ordinal()));
                 data.setLongitude(cursor.getDouble(ObserveDataContract.FIELD_ORDER.LONGITUDE.ordinal()));
                 data.setData(cursor.getString(ObserveDataContract.FIELD_ORDER.DATA.ordinal()));
+                data.setUser_id(cursor.getString(ObserveDataContract.FIELD_ORDER.USER_ID.ordinal()));
 
 
 
@@ -298,7 +299,8 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
     private void viewSet() {
         ObserveData data = mData.get(0);
 
-
+        TextView view1 = (TextView) getView().findViewById(R.id.textUser);
+        view1.setText(data.getUser_id());
         TextView view2 = (TextView) getView().findViewById(R.id.textObserveDate);
         view2.setText(getJST(data.getObserve_date()));
         TextView view3 = (TextView) getView().findViewById(R.id.textLatitude);
