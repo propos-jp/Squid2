@@ -11,4 +11,5 @@
     <string name="downloadCSV">http://shrouded-inlet-2117.herokuapp.com/data.csv</string>
     <string name="uploadCSV">http://shrouded-inlet-2117.herokuapp.com/data/import_csv</string>
     <string name="data.csv">data.csv</string>
+    <string name="map_api_key">AIzaSyC6qRpKV_--MVqgPyzkGPAJsD-_Ex6reHc</string>
 </resources>

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Graph.GraphFragment"
+    tools:context="jp.co.and_ex.squid2.graph.GraphFragment"
     android:background="#00000000">
 
     <TableLayout

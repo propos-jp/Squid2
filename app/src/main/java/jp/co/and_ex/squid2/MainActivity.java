@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
@@ -32,8 +34,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import Graph.GraphFragment;
-import Graph.GraphListener;
+import jp.co.and_ex.squid2.graph.GraphFragment;
+import jp.co.and_ex.squid2.graph.GraphListener;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import jp.co.and_ex.squid2.db.ObserveDataContract;
@@ -117,8 +119,15 @@ public class MainActivity extends SherlockActivity implements OnFragmentInteract
 
         String userId = pref.getString("user_name", "unknown");
         if ("unknown".equals(userId)){
-             Toast.makeText(this, "ユーザー名を登録してください", Toast.LENGTH_LONG).show();
+             Toast.makeText(this, "設定からユーザー名を登録してください", Toast.LENGTH_LONG).show();
         }
+            ApplicationInfo appliInfo;
+            try {
+                appliInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+                Log.d("DEBUG", "sample_metadata: " + appliInfo.metaData.getString("com.google.android.maps.v2.API_KEY"));
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
     }
 
     @Override

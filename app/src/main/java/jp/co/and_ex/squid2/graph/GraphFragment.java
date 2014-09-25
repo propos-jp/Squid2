@@ -1,4 +1,4 @@
-package Graph;
+package jp.co.and_ex.squid2.graph;
 
 
 import android.app.Dialog;
