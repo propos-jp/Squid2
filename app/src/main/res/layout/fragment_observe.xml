@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,7 +11,9 @@
 
     <TableLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true">
 
         <TableRow
             android:layout_width="fill_parent"
@@ -40,14 +42,16 @@
                 android:layout_height="wrap_content"
                 android:text="@string/button_connect"
                 android:id="@+id/button_connect"
-                android:onClick="connect" />
+                android:onClick="connect"
+                android:textSize="@dimen/button_font_size" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text=""
-                android:id="@+id/connectView" />
+                android:id="@+id/connectView"
+                android:textSize="@dimen/button_text_size" />
         </TableRow>
 
         <TableRow
@@ -59,15 +63,47 @@
                 android:layout_height="wrap_content"
                 android:text="@string/button_receive"
                 android:id="@+id/button_receive"
-                android:onClick="receive" />
+                android:onClick="receive"
+                android:textSize="@dimen/button_font_size" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text=""
-                android:id="@+id/receiveView" />
+                android:id="@+id/receiveView"
+                android:textSize="@dimen/button_text_size" />
         </TableRow>
 
     </TableLayout>
-</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:id="@+id/progressContainer"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="受信状況"
+            android:id="@+id/textView2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="000/200"
+            android:id="@+id/progressCount" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/observeProgressBar" />
+
+    </LinearLayout>
+</RelativeLayout>

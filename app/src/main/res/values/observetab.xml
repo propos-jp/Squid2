@@ -10,4 +10,7 @@
     <string name="none_found">デバイスがみつかりません</string>
     <string name="time_out">タイムアウトしました</string>
     <string name="squid_started">観測開始しました</string>
+    <dimen name="button_font_size">36sp</dimen>
+    <dimen name="button_text_size">24sp</dimen>
+    <integer name="progress_max">200</integer>
 </resources>

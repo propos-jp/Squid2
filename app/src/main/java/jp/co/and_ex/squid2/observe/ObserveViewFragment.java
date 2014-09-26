@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +61,8 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
     private Timer timeOut = null;
 
+    private int dataCount;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater,
@@ -88,6 +91,8 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
         messageQueue = null;
         dataBuffer = new StringBuffer();
         squidParser = new SquidParser(this);
+
+
         return view;
     }
 
@@ -209,7 +214,8 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
         titleTextWrite(dateStr);
 
-
+      ProgressBar progressBar = (ProgressBar)getActivity().findViewById(R.id.observeProgressBar);
+        progressBar.setMax(R.integer.progress_max);
     }
 
 
@@ -222,12 +228,13 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
             throw new ClassCastException(activity.toString()
                     + " must implement DeviceListFragment");
         }
+        viewProgressBar(false);
     }
 
     @Override
     public void onDetach() {
-        Log.d(TAG, "onDetach");
         super.onDetach();
+        Log.d(TAG, "onDetach");
         observeViewListener = null;
         cancelCommunicate();
 
@@ -237,7 +244,6 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        super.onDetach();
         observeViewListener = null;
         cancelCommunicate();
     }
@@ -458,6 +464,9 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
 
             getActivity().getContentResolver().insert(ObserveDataContract.CONTENT_URI, values);
             receiveTextWrite("受信完了しました");
+            if (timeOut != null){
+                timeOut.cancel();
+            };
         }
     }
 
@@ -465,9 +474,32 @@ public class ObserveViewFragment extends BaseFragment implements SquidReader {
     public void tokenData(String str) {
         if (dataBuffer.length() == 0){
             receiveTextWrite("受信開始しました");
+            dataCount = 0;
+            viewProgressBar(true);
         }
         dataBuffer.append(str);
+        dataCount++;
 
+        ProgressBar progressBar = (ProgressBar)getActivity().findViewById(R.id.observeProgressBar);
+        progressBar.setMax(200);
+
+        progressBar.setProgress(dataCount);
+
+        String displayCount = String.format("%1$03d/%2$03d",dataCount,progressBar.getMax());
+
+        TextView textView = (TextView)getActivity().findViewById(R.id.progressCount);
+        textView.setText(displayCount);
+    }
+
+    private void viewProgressBar(boolean b){
+        View view = getActivity().findViewById(R.id.progressContainer);
+        if (view != null){
+            if (b){
+                view.setVisibility(View.VISIBLE);
+            }else{
+                view.setVisibility(view.INVISIBLE);
+            }
+        }
     }
 
     @Override

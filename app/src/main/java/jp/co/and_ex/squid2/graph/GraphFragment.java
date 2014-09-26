@@ -12,14 +12,17 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -237,6 +240,14 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
         renderer.setYAxisMax(yMax);
         renderer.setAxesColor(axesColor);
         renderer.setLabelsColor(labelsColor);
+
+
+        Float textSize = getTextSize();
+
+        renderer.setLabelsTextSize(textSize);
+        renderer.setChartTitleTextSize(textSize);
+        renderer.setLegendTextSize(textSize);
+        renderer.setAxisTitleTextSize(textSize);
     }
 
     public void setGraphListener(GraphListener listener) {
@@ -344,5 +355,19 @@ public class GraphFragment extends DialogFragment implements LoaderManager.Loade
             Log.d(TAG,e.getMessage());
         }
         return utc;
+    }
+
+    private Float getTextSize(){
+        Float size = 18f;
+
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display disp = wm.getDefaultDisplay();
+        Point p = new Point();
+        disp.getSize(p);
+        if ( p.x < 800 ){
+            size = 20f;
+        }
+
+        return size;
     }
 }
